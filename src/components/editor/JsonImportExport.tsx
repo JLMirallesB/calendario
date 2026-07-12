@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import type { Calendar } from '../../types'
 import { parseCalendar, serializeCalendar } from '../../lib/json'
 import { slug } from '../../lib/ics'
+import { useI18n } from '../../i18n'
 
 interface Props {
   cal: Calendar
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export default function JsonImportExport({ cal, onImport }: Props) {
+  const { t } = useI18n()
   const fileRef = useRef<HTMLInputElement>(null)
   const [msg, setMsg] = useState<string | null>(null)
 
@@ -27,27 +29,24 @@ export default function JsonImportExport({ cal, onImport }: Props) {
       const text = await file.text()
       const imported = parseCalendar(text)
       onImport(imported, replace)
-      setMsg(`Importado «${imported.name}».`)
+      setMsg(t('jsonio.imported', { name: imported.name }))
     } catch {
-      setMsg('No se pudo leer el JSON. Comprueba el formato.')
+      setMsg(t('jsonio.error'))
     }
   }
 
   return (
     <div className="card">
       <div className="card-header">
-        <h2>Importar / Exportar (JSON)</h2>
+        <h2>{t('jsonio.title')}</h2>
       </div>
-      <p className="help">
-        Exporta el calendario para hacer copia de seguridad o para publicarlo por Pull Request. Al
-        importar puedes reemplazar el calendario actual o añadirlo como uno nuevo.
-      </p>
+      <p className="help">{t('jsonio.help')}</p>
       <div className="btn-group">
         <button className="btn btn-primary" onClick={exportJson}>
-          ⬇ Exportar JSON
+          {t('jsonio.exportBtn')}
         </button>
         <button className="btn" onClick={() => fileRef.current?.click()}>
-          ⬆ Importar JSON…
+          {t('jsonio.importBtn')}
         </button>
       </div>
       <input
@@ -58,9 +57,7 @@ export default function JsonImportExport({ cal, onImport }: Props) {
         onChange={(e) => {
           const f = e.target.files?.[0]
           if (!f) return
-          const replace = confirm(
-            'Aceptar = reemplazar el calendario actual con el importado.\nCancelar = añadirlo como calendario nuevo.',
-          )
+          const replace = confirm(t('jsonio.importConfirm'))
           onFile(f, replace)
           e.target.value = ''
         }}

@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom'
 import type { Calendar, PublishedIndexEntry } from '../../types'
 import { coerceCalendar } from '../../lib/json'
 import { useStore } from '../../state/CalendarStore'
+import { useI18n } from '../../i18n'
 import PublishedViewer from './PublishedViewer'
 
 const BASE = import.meta.env.BASE_URL
 
 export default function PublishedGallery() {
   const { importCalendar } = useStore()
+  const { t } = useI18n()
   const navigate = useNavigate()
   const [entries, setEntries] = useState<PublishedIndexEntry[] | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -40,7 +42,7 @@ export default function PublishedGallery() {
       const cal = coerceCalendar(await r.json())
       setSelected({ id: entry.id, cal })
     } catch {
-      setError(`No se pudo cargar «${entry.name}».`)
+      setError(t('published.loadError', { name: entry.name }))
     } finally {
       setLoadingCal(false)
     }
@@ -49,7 +51,9 @@ export default function PublishedGallery() {
   const importToEditor = () => {
     if (!selected) return
     // Copia editable: nuevo id para no colisionar con futuras sincronizaciones.
-    importCalendar(coerceCalendar({ ...selected.cal, id: undefined, name: `${selected.cal.name} (copia)` }))
+    importCalendar(
+      coerceCalendar({ ...selected.cal, id: undefined, name: `${selected.cal.name} (${t('published.copySuffix')})` }),
+    )
     navigate('/')
   }
 
@@ -67,19 +71,13 @@ export default function PublishedGallery() {
   return (
     <div className="card">
       <div className="card-header">
-        <h2>Calendarios publicados</h2>
+        <h2>{t('published.title')}</h2>
       </div>
-      <p className="help">
-        Calendarios incluidos en el repositorio, de solo lectura. Ábrelos para consultarlos,
-        suscribirte (por perfil) o copiarlos a tu editor. Se actualizan cuando se aprueba un Pull
-        Request en el repositorio.
-      </p>
+      <p className="help">{t('published.help')}</p>
       {error && <p className="inline-note" style={{ color: 'var(--festivo)' }}>{error}</p>}
-      {loadingCal && <p className="empty">Cargando calendario…</p>}
-      {entries === null && <p className="empty">Cargando…</p>}
-      {entries && entries.length === 0 && (
-        <p className="empty">Todavía no hay calendarios publicados en el repositorio.</p>
-      )}
+      {loadingCal && <p className="empty">{t('published.loadingCal')}</p>}
+      {entries === null && <p className="empty">{t('common.loading')}</p>}
+      {entries && entries.length === 0 && <p className="empty">{t('published.empty')}</p>}
       {entries &&
         entries.map((e) => (
           <div key={e.id} className="list-item" style={{ alignItems: 'center' }}>
@@ -88,7 +86,7 @@ export default function PublishedGallery() {
               {e.description && <div className="inline-note">{e.description}</div>}
             </div>
             <button className="btn btn-sm btn-primary" onClick={() => open(e)}>
-              Abrir
+              {t('published.open')}
             </button>
           </div>
         ))}

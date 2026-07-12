@@ -1,16 +1,6 @@
 import type { EventKind } from '../types'
 
-export const EVENT_KIND_LABELS: Record<EventKind, string> = {
-  vacaciones: 'Periodo vacacional',
-  festivoAutonomico: 'Festivo autonómico',
-  festivoLocal: 'Festivo local',
-  festivoALectivo: 'Festivo convertido en lectivo',
-  claustro: 'Claustro',
-  cocope: 'COCOPE',
-  consejoEscolar: 'Consejo escolar',
-  pruebaAcceso: 'Prueba de acceso',
-  otro: 'Otro',
-}
+// Las etiquetas de texto de cada tipo se resuelven vía i18n (`events.kind.*`).
 
 /** Color asociado a cada tipo de evento (para leyendas y calendario compacto). */
 export const EVENT_KIND_COLOR: Record<EventKind, string> = {

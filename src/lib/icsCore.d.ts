@@ -11,10 +11,21 @@ export interface Occurrence {
   allDay: boolean
 }
 
-export function expandOccurrences(calendar: Calendar, profileId: string | null): Occurrence[]
+/** Etiquetas localizadas opcionales; si se omiten se usan las de castellano. */
+export interface OccurrenceLabels {
+  kind: Record<string, string>
+  guided: Record<string, string>
+  startPrefix: string
+}
+
+export function expandOccurrences(
+  calendar: Calendar,
+  profileId: string | null,
+  labels?: OccurrenceLabels,
+): Occurrence[]
 
 export function buildICS(
   calendar: Calendar,
   profileId: string | null,
-  opts?: { calName?: string; dtstamp?: string },
+  opts?: { calName?: string; dtstamp?: string; labels?: OccurrenceLabels },
 ): string

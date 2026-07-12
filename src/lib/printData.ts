@@ -1,5 +1,5 @@
 import type { Calendar, ISODate } from '../types'
-import { expandOccurrences, type Occurrence } from './icsCore'
+import { expandOccurrences, type Occurrence, type OccurrenceLabels } from './icsCore'
 import { eachDay, parseISO, toISO } from './dateUtils'
 
 export interface DayOccurrences {
@@ -8,9 +8,13 @@ export interface DayOccurrences {
 }
 
 /** Mapa fecha ISO → ocurrencias que caen ese día (expandiendo rangos), para el perfil dado. */
-export function occurrencesByDay(cal: Calendar, profileId: string | null): Map<ISODate, Occurrence[]> {
+export function occurrencesByDay(
+  cal: Calendar,
+  profileId: string | null,
+  labels?: OccurrenceLabels,
+): Map<ISODate, Occurrence[]> {
   const map = new Map<ISODate, Occurrence[]>()
-  for (const occ of expandOccurrences(cal, profileId)) {
+  for (const occ of expandOccurrences(cal, profileId, labels)) {
     for (const iso of eachDay(occ.startISO, occ.endISO)) {
       const arr = map.get(iso) ?? []
       arr.push(occ)

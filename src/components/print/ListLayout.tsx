@@ -1,12 +1,14 @@
 import type { Calendar } from '../../types'
 import { expandOccurrences } from '../../lib/icsCore'
 import { EVENT_KIND_COLOR } from '../../lib/labels'
-import { MONTH_NAMES, formatHuman, parseISO } from '../../lib/dateUtils'
+import { parseISO } from '../../lib/dateUtils'
+import { occurrenceLabels, useI18n } from '../../i18n'
 
 export default function ListLayout({ cal, profileId }: { cal: Calendar; profileId: string | null }) {
-  const occ = expandOccurrences(cal, profileId)
+  const { t, fmt } = useI18n()
+  const occ = expandOccurrences(cal, profileId, occurrenceLabels(t))
   if (occ.length === 0) {
-    return <p className="empty">No hay fechas para este perfil.</p>
+    return <p className="empty">{t('print.noDatesForProfile')}</p>
   }
 
   // Agrupar por mes de la fecha de inicio.
@@ -26,7 +28,7 @@ export default function ListLayout({ cal, profileId }: { cal: Calendar; profileI
         return (
           <div key={key} className="month-block">
             <h3>
-              {MONTH_NAMES[m]} {y}
+              {fmt.monthName(m)} {y}
             </h3>
             {items.map((o, i) => {
               const color =
@@ -34,14 +36,18 @@ export default function ListLayout({ cal, profileId }: { cal: Calendar; profileI
                   ? 'var(--accent)'
                   : EVENT_KIND_COLOR[o.kind as keyof typeof EVENT_KIND_COLOR] ?? 'var(--text-muted)'
               const rangeLabel =
-                o.startISO !== o.endISO ? `${formatHuman(o.startISO)} → ${formatHuman(o.endISO)}` : formatHuman(o.startISO)
+                o.startISO !== o.endISO ? `${fmt.human(o.startISO)} → ${fmt.human(o.endISO)}` : fmt.human(o.startISO)
               return (
                 <div key={i} className="occ-row">
                   <span className="swatch-dot" style={{ background: color }} />
                   <span className="date">{rangeLabel}</span>
                   <span>
                     {o.title}
-                    {o.provisional && <span className="badge badge-provisional" style={{ marginLeft: 8 }}>Provisional</span>}
+                    {o.provisional && (
+                      <span className="badge badge-provisional" style={{ marginLeft: 8 }}>
+                        {t('common.provisional')}
+                      </span>
+                    )}
                   </span>
                 </div>
               )

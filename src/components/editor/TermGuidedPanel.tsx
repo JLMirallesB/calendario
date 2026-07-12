@@ -1,5 +1,6 @@
 import type { DateValue, GuidedFields, RangeValue, Term } from '../../types'
 import { guidedItemsForType, missingGuidedItems } from '../../lib/guided'
+import { useI18n } from '../../i18n'
 
 interface Props {
   term: Term
@@ -7,27 +8,29 @@ interface Props {
 }
 
 export default function TermGuidedPanel({ term, onChange }: Props) {
+  const { t } = useI18n()
   const items = guidedItemsForType(term.type)
   const missing = missingGuidedItems(term)
 
   const setField = (key: keyof GuidedFields, value: DateValue | RangeValue) => {
     onChange({ ...term.guided, [key]: value })
   }
+  const itemLabel = (key: keyof GuidedFields) => t(`guided.items.${key}`)
 
   return (
     <div style={{ marginTop: 12, borderTop: '1px dashed var(--border)', paddingTop: 12 }}>
       {missing.length > 0 && (
         <>
-          <div className="section-title">Pendiente de introducir ({missing.length})</div>
+          <div className="section-title">{t('guided.pending', { n: missing.length })}</div>
           <ul className="warn-list">
             {missing.map((m) => (
-              <li key={m.key}>{m.label}</li>
+              <li key={m.key}>{itemLabel(m.key)}</li>
             ))}
           </ul>
         </>
       )}
       <div className="section-title" style={{ marginTop: 12 }}>
-        Hitos del trimestre
+        {t('guided.milestones')}
       </div>
       {items.map((it) => {
         const value = term.guided[it.key]
@@ -36,7 +39,7 @@ export default function TermGuidedPanel({ term, onChange }: Props) {
           return (
             <div key={it.key} className="field-row" style={{ alignItems: 'flex-end' }}>
               <div className="field" style={{ flex: 2 }}>
-                <label>{it.label}</label>
+                <label>{itemLabel(it.key)}</label>
                 <input
                   type="date"
                   value={dv.date ?? ''}
@@ -50,7 +53,7 @@ export default function TermGuidedPanel({ term, onChange }: Props) {
                     checked={dv.provisional}
                     onChange={(e) => setField(it.key, { ...dv, provisional: e.target.checked })}
                   />
-                  Provisional
+                  {t('common.provisional')}
                 </label>
               </div>
             </div>
@@ -60,7 +63,9 @@ export default function TermGuidedPanel({ term, onChange }: Props) {
         return (
           <div key={it.key} className="field-row" style={{ alignItems: 'flex-end' }}>
             <div className="field">
-              <label>{it.label} — desde</label>
+              <label>
+                {itemLabel(it.key)} {t('guided.rangeFrom')}
+              </label>
               <input
                 type="date"
                 value={rv.start ?? ''}
@@ -68,7 +73,7 @@ export default function TermGuidedPanel({ term, onChange }: Props) {
               />
             </div>
             <div className="field">
-              <label>hasta</label>
+              <label>{t('guided.rangeTo')}</label>
               <input
                 type="date"
                 value={rv.end ?? ''}
@@ -82,7 +87,7 @@ export default function TermGuidedPanel({ term, onChange }: Props) {
                   checked={rv.provisional}
                   onChange={(e) => setField(it.key, { ...rv, provisional: e.target.checked })}
                 />
-                Provisional
+                {t('common.provisional')}
               </label>
             </div>
           </div>

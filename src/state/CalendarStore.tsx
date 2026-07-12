@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import type { Calendar } from '../types'
 import { STORAGE_KEY } from '../config'
 import { coerceCalendar, newCalendar } from '../lib/json'
+import { getLang } from '../i18n'
 
 interface StoredState {
   calendars: Calendar[]
@@ -40,7 +41,7 @@ function loadState(): StoredState {
   } catch {
     /* datos corruptos: empezar de cero */
   }
-  const first = newCalendar('Curso 2025-2026')
+  const first = newCalendar('Curso 2025-2026', getLang())
   return { calendars: [first], currentId: first.id }
 }
 
@@ -60,7 +61,7 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const createCalendar = useCallback((name?: string) => {
-    const cal = newCalendar(name || 'Nuevo calendario')
+    const cal = newCalendar(name, getLang())
     setState((s) => ({ calendars: [...s.calendars, cal], currentId: cal.id }))
   }, [])
 
@@ -81,7 +82,7 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
     setState((s) => {
       const remaining = s.calendars.filter((c) => c.id !== id)
       if (!remaining.length) {
-        const fresh = newCalendar('Curso 2025-2026')
+        const fresh = newCalendar('Curso 2025-2026', getLang())
         return { calendars: [fresh], currentId: fresh.id }
       }
       const currentId = s.currentId === id ? remaining[0].id : s.currentId

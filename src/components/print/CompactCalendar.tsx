@@ -2,25 +2,25 @@ import type { Calendar } from '../../types'
 import type { Occurrence } from '../../lib/icsCore'
 import { isLectiveDay } from '../../lib/lectiveDays'
 import { occurrencesByDay, monthsInRange } from '../../lib/printData'
-import { MONTH_NAMES, toISO } from '../../lib/dateUtils'
-
-const WD = ['L', 'M', 'X', 'J', 'V', 'S', 'D']
+import { toISO, WEEKDAY_ORDER } from '../../lib/dateUtils'
+import { occurrenceLabels, useI18n, type Formatters, type TFunc } from '../../i18n'
 
 export default function CompactCalendar({ cal, profileId }: { cal: Calendar; profileId: string | null }) {
+  const { t, fmt } = useI18n()
   if (!cal.courseStart || !cal.courseEnd) {
-    return <p className="empty">Indica inicio y fin de curso para ver el calendario compacto.</p>
+    return <p className="empty">{t('print.needDatesCompact')}</p>
   }
-  const byDay = occurrencesByDay(cal, profileId)
+  const byDay = occurrencesByDay(cal, profileId, occurrenceLabels(t))
   const months = monthsInRange(cal.courseStart, cal.courseEnd)
 
   return (
     <>
       <div className="compact-grid">
         {months.map((mi) => (
-          <MiniMonth key={`${mi.year}-${mi.month}`} cal={cal} year={mi.year} month={mi.month} byDay={byDay} />
+          <MiniMonth key={`${mi.year}-${mi.month}`} cal={cal} year={mi.year} month={mi.month} byDay={byDay} fmt={fmt} />
         ))}
       </div>
-      <Legend />
+      <Legend t={t} />
     </>
   )
 }
@@ -30,11 +30,13 @@ function MiniMonth({
   year,
   month,
   byDay,
+  fmt,
 }: {
   cal: Calendar
   year: number
   month: number
   byDay: Map<string, Occurrence[]>
+  fmt: Formatters
 }) {
   const daysInMonth = new Date(year, month + 1, 0).getDate()
   const firstWeekday = (new Date(year, month, 1).getDay() + 6) % 7 // 0 = lunes
@@ -49,13 +51,13 @@ function MiniMonth({
   return (
     <div className="mini-month">
       <h4>
-        {MONTH_NAMES[month]} {year}
+        {fmt.monthName(month)} {year}
       </h4>
       <table className="mini">
         <thead>
           <tr>
-            {WD.map((w, i) => (
-              <th key={i}>{w}</th>
+            {WEEKDAY_ORDER.map((wd) => (
+              <th key={wd}>{fmt.weekdayShort(wd).slice(0, 2)}</th>
             ))}
           </tr>
         </thead>
@@ -92,21 +94,23 @@ function MiniMonth({
   )
 }
 
-function Legend() {
+function Legend({ t }: { t: TFunc }) {
   return (
     <div className="tag-legend" style={{ marginTop: 16 }}>
       <span className="swatch">
-        <span className="box" style={{ background: 'color-mix(in srgb, var(--lective) 40%, transparent)' }} /> Lectivo
+        <span className="box" style={{ background: 'color-mix(in srgb, var(--lective) 40%, transparent)' }} />{' '}
+        {t('print.legendLective')}
       </span>
       <span className="swatch">
         <span className="box" style={{ background: 'color-mix(in srgb, var(--vacaciones) 45%, transparent)' }} />{' '}
-        Vacaciones
+        {t('print.legendVacaciones')}
       </span>
       <span className="swatch">
-        <span className="box" style={{ background: 'color-mix(in srgb, var(--festivo) 40%, transparent)' }} /> Festivo
+        <span className="box" style={{ background: 'color-mix(in srgb, var(--festivo) 40%, transparent)' }} />{' '}
+        {t('print.legendFestivo')}
       </span>
       <span className="swatch">
-        <span className="box" style={{ background: 'var(--accent)', borderRadius: '50%' }} /> Evento / hito
+        <span className="box" style={{ background: 'var(--accent)', borderRadius: '50%' }} /> {t('print.legendEvent')}
       </span>
     </div>
   )
