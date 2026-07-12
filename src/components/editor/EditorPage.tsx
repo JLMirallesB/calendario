@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useStore } from '../../state/CalendarStore'
+import { useI18n } from '../../i18n'
 import CalendarBar from './CalendarBar'
 import CourseDates from './CourseDates'
 import ProfilesEditor from './ProfilesEditor'
@@ -11,9 +12,10 @@ import TermWeekdayStats from '../counter/TermWeekdayStats'
 
 export default function EditorPage() {
   const { current, patchCurrent, importCalendar } = useStore()
+  const { t } = useI18n()
 
   if (!current) {
-    return <p>Cargando…</p>
+    return <p>{t('common.loading')}</p>
   }
   const cal = current
 
@@ -27,8 +29,8 @@ export default function EditorPage() {
           <ProfilesEditor cal={cal} onChange={(profiles) => patchCurrent((c) => ({ ...c, profiles }))} />
 
           <EventList
-            title="Vacaciones y festivos"
-            help="Periodos vacacionales y festivos (autonómicos y locales). Usa «Festivo convertido en lectivo» para recuperar como lectivo un día del calendario autonómico."
+            title={t('events.vacTitle')}
+            help={t('events.vacHelp')}
             kinds={['vacaciones', 'festivoAutonomico', 'festivoLocal', 'festivoALectivo']}
             events={cal.events}
             profiles={cal.profiles}
@@ -38,8 +40,8 @@ export default function EditorPage() {
           <TermsEditor cal={cal} onChange={(terms) => patchCurrent((c) => ({ ...c, terms }))} />
 
           <EventList
-            title="Eventos institucionales"
-            help="Claustros, COCOPE, consejos escolares y pruebas de acceso."
+            title={t('events.instTitle')}
+            help={t('events.instHelp')}
             kinds={['claustro', 'cocope', 'consejoEscolar', 'pruebaAcceso']}
             events={cal.events}
             profiles={cal.profiles}
@@ -47,8 +49,8 @@ export default function EditorPage() {
           />
 
           <EventList
-            title="Otras fechas"
-            help="Cualquier otra fecha puntual o de rango que quieras reflejar."
+            title={t('events.otherTitle')}
+            help={t('events.otherHelp')}
             kinds={['otro']}
             events={cal.events}
             profiles={cal.profiles}
@@ -65,7 +67,7 @@ export default function EditorPage() {
           <LectiveCounter cal={cal} />
           <div className="card" style={{ textAlign: 'center' }}>
             <Link className="btn btn-primary" to="/print" style={{ width: '100%', justifyContent: 'center' }}>
-              🖨 Ver / imprimir (PDF · ICS)
+              {t('counter.printButton')}
             </Link>
           </div>
           <TermWeekdayStats cal={cal} />

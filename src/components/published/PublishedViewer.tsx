@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { Calendar } from '../../types'
-import { formatLong } from '../../lib/dateUtils'
 import { totalLectiveDays } from '../../lib/lectiveDays'
+import { useI18n } from '../../i18n'
 import ListLayout from '../print/ListLayout'
 import CompactCalendar from '../print/CompactCalendar'
 import SubscribeDialog from './SubscribeDialog'
@@ -14,6 +14,7 @@ interface Props {
 }
 
 export default function PublishedViewer({ publishedId, cal, onImport, onBack }: Props) {
+  const { t, fmt } = useI18n()
   const [profileId, setProfileId] = useState<string | null>(null)
   const [mode, setMode] = useState<'lista' | 'compacto'>('compacto')
 
@@ -23,23 +24,23 @@ export default function PublishedViewer({ publishedId, cal, onImport, onBack }: 
         <div className="card-header">
           <h2>{cal.name}</h2>
           <button className="btn btn-sm" onClick={onBack}>
-            ← Volver a la lista
+            {t('published.viewerBack')}
           </button>
         </div>
         <p className="help">
           {cal.community && <>{cal.community} · </>}
           {cal.courseStart && cal.courseEnd && (
             <>
-              Curso {formatLong(cal.courseStart)} – {formatLong(cal.courseEnd)} ·{' '}
+              {t('print.courseRange')} {fmt.long(cal.courseStart)} – {fmt.long(cal.courseEnd)} ·{' '}
             </>
           )}
-          <strong>{totalLectiveDays(cal)}</strong> días lectivos · Solo lectura
+          <strong>{totalLectiveDays(cal)}</strong> {t('published.lectiveDaysLabel')} · {t('published.readonly')}
         </p>
         <div className="print-controls">
           <div className="field" style={{ margin: 0 }}>
-            <label>Perfil</label>
+            <label>{t('common.profile')}</label>
             <select value={profileId ?? ''} onChange={(e) => setProfileId(e.target.value || null)}>
-              <option value="">Todos los perfiles</option>
+              <option value="">{t('common.allProfiles')}</option>
               {cal.profiles.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name}
@@ -48,16 +49,16 @@ export default function PublishedViewer({ publishedId, cal, onImport, onBack }: 
             </select>
           </div>
           <div className="field" style={{ margin: 0 }}>
-            <label>Formato</label>
+            <label>{t('common.format')}</label>
             <div className="btn-group">
               <button className={`btn btn-sm ${mode === 'lista' ? 'btn-primary' : ''}`} onClick={() => setMode('lista')}>
-                Lista
+                {t('print.formatList')}
               </button>
               <button
                 className={`btn btn-sm ${mode === 'compacto' ? 'btn-primary' : ''}`}
                 onClick={() => setMode('compacto')}
               >
-                Compacto
+                {t('print.formatCompactShort')}
               </button>
             </div>
           </div>

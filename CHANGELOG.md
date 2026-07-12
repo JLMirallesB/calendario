@@ -4,6 +4,23 @@ Todas las novedades relevantes de la app se documentan en este archivo.
 El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/) y el
 proyecto usa [versionado semántico](https://semver.org/lang/es/).
 
+## [0.2.0] — 2026-07-12
+
+### Añadido
+
+- **Multiidioma (i18n)**: interfaz disponible en **castellano** (por defecto) y
+  **valencià/català**, con selector de idioma en la cabecera. El idioma elegido se
+  recuerda entre sesiones.
+- Fechas, nombres de meses y días de la semana **localizados** según el idioma activo.
+- Al crear un calendario nuevo, los nombres por defecto de perfiles y trimestres se
+  generan en el idioma activo.
+- La vista de impresión y la descarga de `.ics` desde la app respetan el idioma activo.
+
+### Notas
+
+- Los feeds ICS de suscripción publicados en el repositorio se generan con etiquetas en
+  castellano; los títulos introducidos por cada usuario se muestran tal cual.
+
 ## [0.1.0] — 2026-07-12
 
 ### Añadido

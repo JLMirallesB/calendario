@@ -9,8 +9,25 @@ import type {
   TermType,
 } from '../types'
 import { isValidISO } from './dateUtils'
+import { es } from '../i18n/es'
+import { ca } from '../i18n/ca'
 
 export const SCHEMA_VERSION = 1
+
+type Lang = 'es' | 'ca'
+const DICTS = { es, ca }
+function dnames(lang: Lang) {
+  return (DICTS[lang] ?? es).defaults
+}
+
+const TERM_LABEL_KEY: Record<TermType, keyof typeof es.defaults> = {
+  Primer: 'termPrimer',
+  Segundo: 'termSegundo',
+  Tercer: 'termTercer',
+  Anticipacion: 'termAnticipacion',
+  Ordinaria: 'termOrdinaria',
+  Extraordinaria: 'termExtraordinaria',
+}
 
 export function makeId(prefix = 'id'): string {
   try {
@@ -47,20 +64,18 @@ export function emptyGuided(): GuidedFields {
   }
 }
 
-export const DEFAULT_TERM_LABELS: Record<TermType, string> = {
-  Primer: 'Primer trimestre',
-  Segundo: 'Segundo trimestre',
-  Tercer: 'Tercer trimestre',
-  Anticipacion: 'Anticipación',
-  Ordinaria: 'Ordinaria / Final',
-  Extraordinaria: 'Extraordinaria',
+/** Etiqueta por defecto de un tipo de trimestre en el idioma dado. */
+export function defaultTermLabel(type: TermType, lang: Lang = 'es'): string {
+  return dnames(lang)[TERM_LABEL_KEY[type]]
 }
 
-export function newTerm(type: TermType): Term {
+const TERM_ORDER: TermType[] = ['Primer', 'Segundo', 'Tercer', 'Anticipacion', 'Ordinaria', 'Extraordinaria']
+
+export function newTerm(type: TermType, lang: Lang = 'es'): Term {
   return {
     id: makeId('term'),
     type,
-    name: DEFAULT_TERM_LABELS[type],
+    name: defaultTermLabel(type, lang),
     startDate: null,
     endDate: null,
     guidedEnabled: false,
@@ -68,29 +83,30 @@ export function newTerm(type: TermType): Term {
   }
 }
 
-export function defaultTerms(): Term[] {
-  return (Object.keys(DEFAULT_TERM_LABELS) as TermType[]).map(newTerm)
+export function defaultTerms(lang: Lang = 'es'): Term[] {
+  return TERM_ORDER.map((type) => newTerm(type, lang))
 }
 
-export function defaultProfiles(): Profile[] {
+export function defaultProfiles(lang: Lang = 'es'): Profile[] {
+  const d = dnames(lang)
   return [
-    { id: 'docentes', name: 'Docentes', color: '#2563eb' },
-    { id: 'alumnado', name: 'Alumnado', color: '#16a34a' },
-    { id: 'familias', name: 'Familias', color: '#d97706' },
-    { id: 'admin', name: 'Administración', color: '#9333ea' },
+    { id: 'docentes', name: d.profileDocentes, color: '#2563eb' },
+    { id: 'alumnado', name: d.profileAlumnado, color: '#16a34a' },
+    { id: 'familias', name: d.profileFamilias, color: '#d97706' },
+    { id: 'admin', name: d.profileAdmin, color: '#9333ea' },
   ]
 }
 
-export function newCalendar(name = 'Nuevo calendario'): Calendar {
+export function newCalendar(name?: string, lang: Lang = 'es'): Calendar {
   return {
     id: makeId('cal'),
-    name,
+    name: name || dnames(lang).newCalendar,
     community: '',
     courseStart: null,
     courseEnd: null,
     restWeekdays: [6, 0], // sábado y domingo
-    profiles: defaultProfiles(),
-    terms: defaultTerms(),
+    profiles: defaultProfiles(lang),
+    terms: defaultTerms(lang),
     events: [],
     schemaVersion: SCHEMA_VERSION,
     updatedAt: new Date().toISOString(),
@@ -162,7 +178,7 @@ function coerceTerm(v: unknown): Term {
   return {
     id: asStr(o.id, makeId('term')),
     type,
-    name: asStr(o.name, DEFAULT_TERM_LABELS[type]),
+    name: asStr(o.name, defaultTermLabel(type, 'es')),
     startDate: asISOorNull(o.startDate),
     endDate: asISOorNull(o.endDate),
     guidedEnabled: asBool(o.guidedEnabled),

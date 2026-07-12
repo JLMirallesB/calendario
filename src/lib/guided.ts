@@ -2,28 +2,28 @@ import type { DateValue, GuidedFields, RangeValue, Term, TermType } from '../typ
 
 export interface GuidedItem {
   key: keyof GuidedFields
-  label: string
   kind: 'date' | 'range'
 }
 
-// Hitos comunes a todos los trimestres.
+// Hitos comunes a todos los trimestres. La etiqueta visible se resuelve en la UI con
+// i18n mediante la clave `guided.items.<key>`.
 const COMMON_ITEMS: GuidedItem[] = [
-  { key: 'pruebaEvaluacionTeorica', label: 'Prueba de evaluación teórica', kind: 'date' },
-  { key: 'sesionEvaluacion', label: 'Sesión de evaluación', kind: 'date' },
-  { key: 'itacaNotasInicio', label: 'Inicio de introducción de notas en ITACA', kind: 'date' },
-  { key: 'itacaNotasUltimaModif', label: 'Última modificación de notas en ITACA', kind: 'date' },
-  { key: 'webFamiliaVisibilidad', label: 'Visibilidad de notas en WebFamília', kind: 'date' },
-  { key: 'impresionActas', label: 'Impresión de actas', kind: 'date' },
-  { key: 'firmaActas', label: 'Firma de actas', kind: 'date' },
-  { key: 'plazoReclamacion', label: 'Plazo de reclamación de notas', kind: 'range' },
+  { key: 'pruebaEvaluacionTeorica', kind: 'date' },
+  { key: 'sesionEvaluacion', kind: 'date' },
+  { key: 'itacaNotasInicio', kind: 'date' },
+  { key: 'itacaNotasUltimaModif', kind: 'date' },
+  { key: 'webFamiliaVisibilidad', kind: 'date' },
+  { key: 'impresionActas', kind: 'date' },
+  { key: 'firmaActas', kind: 'date' },
+  { key: 'plazoReclamacion', kind: 'range' },
 ]
 
 // Hitos adicionales exclusivos del trimestre de Anticipación.
 const ANTICIPACION_ITEMS: GuidedItem[] = [
-  { key: 'anticipacionSolicitudInicio', label: 'Inicio de solicitud de anticipación', kind: 'date' },
-  { key: 'anticipacionSolicitudFin', label: 'Fin de solicitud de anticipación', kind: 'date' },
-  { key: 'anticipacionListadoProvisional', label: 'Listado provisional de anticipación', kind: 'date' },
-  { key: 'anticipacionListadoDefinitivo', label: 'Listado definitivo de anticipación', kind: 'date' },
+  { key: 'anticipacionSolicitudInicio', kind: 'date' },
+  { key: 'anticipacionSolicitudFin', kind: 'date' },
+  { key: 'anticipacionListadoProvisional', kind: 'date' },
+  { key: 'anticipacionListadoDefinitivo', kind: 'date' },
 ]
 
 /** Devuelve los hitos que aplican a un tipo de trimestre. */

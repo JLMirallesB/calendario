@@ -1,5 +1,6 @@
 import type { Calendar } from '../../types'
-import { WEEKDAY_NAMES, WEEKDAY_ORDER } from '../../lib/dateUtils'
+import { WEEKDAY_ORDER } from '../../lib/dateUtils'
+import { useI18n } from '../../i18n'
 
 interface Props {
   cal: Calendar
@@ -7,6 +8,7 @@ interface Props {
 }
 
 export default function CourseDates({ cal, onChange }: Props) {
+  const { t, fmt } = useI18n()
   const toggleRest = (wd: number) => {
     const set = new Set(cal.restWeekdays)
     set.has(wd) ? set.delete(wd) : set.add(wd)
@@ -15,26 +17,26 @@ export default function CourseDates({ cal, onChange }: Props) {
   return (
     <div className="card">
       <div className="card-header">
-        <h2>Datos del curso</h2>
+        <h2>{t('course.title')}</h2>
       </div>
       <div className="field-row">
         <div className="field" style={{ flex: 2 }}>
-          <label>Nombre del calendario</label>
+          <label>{t('course.nameLabel')}</label>
           <input type="text" value={cal.name} onChange={(e) => onChange({ name: e.target.value })} />
         </div>
         <div className="field" style={{ flex: 2 }}>
-          <label>Comunidad / centro (texto libre)</label>
+          <label>{t('course.communityLabel')}</label>
           <input
             type="text"
             value={cal.community}
-            placeholder="p. ej. Conservatorio de… / Comunitat Valenciana"
+            placeholder={t('course.communityPlaceholder')}
             onChange={(e) => onChange({ community: e.target.value })}
           />
         </div>
       </div>
       <div className="field-row">
         <div className="field">
-          <label>Inicio de curso</label>
+          <label>{t('course.startLabel')}</label>
           <input
             type="date"
             value={cal.courseStart ?? ''}
@@ -42,7 +44,7 @@ export default function CourseDates({ cal, onChange }: Props) {
           />
         </div>
         <div className="field">
-          <label>Fin de curso</label>
+          <label>{t('course.endLabel')}</label>
           <input
             type="date"
             value={cal.courseEnd ?? ''}
@@ -51,7 +53,7 @@ export default function CourseDates({ cal, onChange }: Props) {
         </div>
       </div>
       <div className="field">
-        <label>Días de descanso semanal (no lectivos)</label>
+        <label>{t('course.restDaysLabel')}</label>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
           {WEEKDAY_ORDER.map((wd) => (
             <label key={wd} className="profile-pill" style={{ cursor: 'pointer' }}>
@@ -61,7 +63,7 @@ export default function CourseDates({ cal, onChange }: Props) {
                 checked={cal.restWeekdays.includes(wd)}
                 onChange={() => toggleRest(wd)}
               />
-              {WEEKDAY_NAMES[wd]}
+              {fmt.weekdayLong(wd)}
             </label>
           ))}
         </div>

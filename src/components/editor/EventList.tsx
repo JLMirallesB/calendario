@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import type { CalEvent, EventKind, Profile } from '../../types'
-import { EVENT_KIND_LABELS } from '../../lib/labels'
 import { newEvent } from '../../lib/json'
-import { formatHuman } from '../../lib/dateUtils'
+import { useI18n } from '../../i18n'
 import ProfileSelector from './ProfileSelector'
 
 interface Props {
@@ -19,6 +18,7 @@ interface Props {
  * otros…). Cada evento admite fecha puntual o rango, marca de provisional y perfiles.
  */
 export default function EventList({ title, help, kinds, events, profiles, onChange }: Props) {
+  const { t } = useI18n()
   const mine = events.filter((e) => kinds.includes(e.kind))
   const others = events.filter((e) => !kinds.includes(e.kind))
 
@@ -39,11 +39,11 @@ export default function EventList({ title, help, kinds, events, profiles, onChan
       <div className="card-header">
         <h3>{title}</h3>
         <button className="btn btn-sm btn-primary" onClick={add}>
-          + Añadir
+          + {t('common.add')}
         </button>
       </div>
       {help && <p className="help">{help}</p>}
-      {mine.length === 0 && <p className="empty">Aún no hay fechas. Pulsa «Añadir».</p>}
+      {mine.length === 0 && <p className="empty">{t('events.empty')}</p>}
       {mine.map((ev) => (
         <EventRow
           key={ev.id}
@@ -71,6 +71,7 @@ function EventRow({
   onUpdate: (patch: Partial<CalEvent>) => void
   onRemove: () => void
 }) {
+  const { t, fmt } = useI18n()
   const isRange = !!ev.range
   const [mode, setMode] = useState<'date' | 'range'>(isRange ? 'range' : 'date')
 
@@ -90,21 +91,21 @@ function EventRow({
       <div className="grow" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         <div className="field-row">
           <div className="field" style={{ flex: 2 }}>
-            <label>Descripción</label>
+            <label>{t('events.description')}</label>
             <input
               type="text"
               value={ev.title}
-              placeholder={EVENT_KIND_LABELS[ev.kind]}
+              placeholder={t(`events.kind.${ev.kind}`)}
               onChange={(e) => onUpdate({ title: e.target.value })}
             />
           </div>
           {kinds.length > 1 && (
             <div className="field">
-              <label>Tipo</label>
+              <label>{t('events.type')}</label>
               <select value={ev.kind} onChange={(e) => onUpdate({ kind: e.target.value as EventKind })}>
                 {kinds.map((k) => (
                   <option key={k} value={k}>
-                    {EVENT_KIND_LABELS[k]}
+                    {t(`events.kind.${k}`)}
                   </option>
                 ))}
               </select>
@@ -114,33 +115,33 @@ function EventRow({
 
         <div className="field-row" style={{ alignItems: 'flex-end' }}>
           <div className="field" style={{ flex: 'none' }}>
-            <label>Formato</label>
+            <label>{t('common.format')}</label>
             <div className="btn-group">
               <button
                 className={`btn btn-sm ${mode === 'date' ? 'btn-primary' : ''}`}
                 onClick={setModeDate}
                 type="button"
               >
-                Puntual
+                {t('events.punctual')}
               </button>
               <button
                 className={`btn btn-sm ${mode === 'range' ? 'btn-primary' : ''}`}
                 onClick={setModeRange}
                 type="button"
               >
-                Rango
+                {t('events.range')}
               </button>
             </div>
           </div>
           {mode === 'date' ? (
             <div className="field">
-              <label>Fecha</label>
+              <label>{t('common.date')}</label>
               <input type="date" value={ev.date ?? ''} onChange={(e) => onUpdate({ date: e.target.value || null })} />
             </div>
           ) : (
             <>
               <div className="field">
-                <label>Desde</label>
+                <label>{t('common.from')}</label>
                 <input
                   type="date"
                   value={ev.range?.start ?? ''}
@@ -150,7 +151,7 @@ function EventRow({
                 />
               </div>
               <div className="field">
-                <label>Hasta</label>
+                <label>{t('common.to')}</label>
                 <input
                   type="date"
                   value={ev.range?.end ?? ''}
@@ -176,13 +177,13 @@ function EventRow({
               checked={ev.provisional}
               onChange={(e) => onUpdate({ provisional: e.target.checked })}
             />
-            Provisional
+            {t('common.provisional')}
           </label>
-          {ev.provisional && <span className="badge badge-provisional">Provisional</span>}
-          {ev.date && <span className="inline-note">{formatHuman(ev.date)}</span>}
+          {ev.provisional && <span className="badge badge-provisional">{t('common.provisional')}</span>}
+          {ev.date && <span className="inline-note">{fmt.human(ev.date)}</span>}
         </div>
       </div>
-      <button className="btn btn-sm btn-danger" onClick={onRemove} title="Eliminar">
+      <button className="btn btn-sm btn-danger" onClick={onRemove} title={t('events.removeTitle')}>
         ✕
       </button>
     </div>

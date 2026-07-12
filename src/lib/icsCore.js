@@ -26,6 +26,7 @@ function icsDate(iso) {
 
 // ---- Etiquetas de hitos del modo guiado (debe reflejar lib/guided.ts) ----
 
+// Etiquetas por defecto (castellano). La app puede pasar `labels` traducidas.
 const GUIDED_LABELS = {
   pruebaEvaluacionTeorica: 'Prueba de evaluación teórica',
   sesionEvaluacion: 'Sesión de evaluación',
@@ -41,6 +42,20 @@ const GUIDED_LABELS = {
   anticipacionListadoDefinitivo: 'Listado definitivo de anticipación',
 }
 
+const KIND_TITLES = {
+  vacaciones: 'Vacaciones',
+  festivoAutonomico: 'Festivo autonómico',
+  festivoLocal: 'Festivo local',
+  festivoALectivo: 'Día lectivo (festivo recuperado)',
+  claustro: 'Claustro',
+  cocope: 'COCOPE',
+  consejoEscolar: 'Consejo escolar',
+  pruebaAcceso: 'Prueba de acceso',
+  otro: 'Evento',
+}
+
+const DEFAULT_LABELS = { kind: KIND_TITLES, guided: GUIDED_LABELS, startPrefix: 'Inicio' }
+
 const RANGE_KEYS = new Set(['plazoReclamacion'])
 
 /**
@@ -49,7 +64,11 @@ const RANGE_KEYS = new Set(['plazoReclamacion'])
  * Cada ocurrencia: { startISO, endISO, title, provisional, kind, allDay }.
  * `endISO` es inclusivo (último día del evento).
  */
-export function expandOccurrences(calendar, profileId) {
+export function expandOccurrences(calendar, profileId, labels) {
+  const L = labels || DEFAULT_LABELS
+  const kindTitles = L.kind || KIND_TITLES
+  const guidedLabels = L.guided || GUIDED_LABELS
+  const startPrefix = L.startPrefix || 'Inicio'
   const out = []
   const visible = (profiles) => !profileId || !profiles || profiles.length === 0 || profiles.includes(profileId)
 
@@ -69,7 +88,7 @@ export function expandOccurrences(calendar, profileId) {
     out.push({
       startISO,
       endISO,
-      title: ev.title || tituloPorKind(ev.kind),
+      title: ev.title || kindTitles[ev.kind] || 'Evento',
       provisional: !!ev.provisional,
       kind: ev.kind,
       allDay: true,
@@ -82,7 +101,7 @@ export function expandOccurrences(calendar, profileId) {
       out.push({
         startISO: term.startDate,
         endISO: term.startDate,
-        title: `Inicio: ${term.name}`,
+        title: `${startPrefix}: ${term.name}`,
         provisional: false,
         kind: 'termStart',
         allDay: true,
@@ -92,12 +111,13 @@ export function expandOccurrences(calendar, profileId) {
       for (const key of Object.keys(GUIDED_LABELS)) {
         const value = term.guided[key]
         if (!value) continue
+        const label = guidedLabels[key] || GUIDED_LABELS[key]
         if (RANGE_KEYS.has(key)) {
           if (value.start && value.end) {
             out.push({
               startISO: value.start,
               endISO: value.end,
-              title: `${GUIDED_LABELS[key]} · ${term.name}`,
+              title: `${label} · ${term.name}`,
               provisional: !!value.provisional,
               kind: 'guided',
               allDay: true,
@@ -107,7 +127,7 @@ export function expandOccurrences(calendar, profileId) {
           out.push({
             startISO: value.date,
             endISO: value.date,
-            title: `${GUIDED_LABELS[key]} · ${term.name}`,
+            title: `${label} · ${term.name}`,
             provisional: !!value.provisional,
             kind: 'guided',
             allDay: true,
@@ -119,21 +139,6 @@ export function expandOccurrences(calendar, profileId) {
 
   out.sort((a, b) => (a.startISO < b.startISO ? -1 : a.startISO > b.startISO ? 1 : 0))
   return out
-}
-
-function tituloPorKind(kind) {
-  const map = {
-    vacaciones: 'Vacaciones',
-    festivoAutonomico: 'Festivo autonómico',
-    festivoLocal: 'Festivo local',
-    festivoALectivo: 'Día lectivo (festivo recuperado)',
-    claustro: 'Claustro',
-    cocope: 'COCOPE',
-    consejoEscolar: 'Consejo escolar',
-    pruebaAcceso: 'Prueba de acceso',
-    otro: 'Evento',
-  }
-  return map[kind] || 'Evento'
 }
 
 // ---- Escapado y plegado de líneas ICS (RFC 5545) ----
@@ -167,7 +172,7 @@ function foldLine(line) {
  * `opts.dtstamp` marca temporal ICS (por defecto derivada de updatedAt).
  */
 export function buildICS(calendar, profileId, opts = {}) {
-  const occ = expandOccurrences(calendar, profileId)
+  const occ = expandOccurrences(calendar, profileId, opts.labels)
   const calName = opts.calName || calendar.name || 'Calendario'
   const dtstamp = opts.dtstamp || toDtstamp(calendar.updatedAt)
   const lines = []

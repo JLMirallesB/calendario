@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { Calendar } from '../../types'
 import { PUBLIC_BASE_URL } from '../../config'
 import { downloadICS } from '../../lib/ics'
+import { occurrenceLabels, useI18n } from '../../i18n'
 
 interface Props {
   publishedId: string
@@ -16,6 +17,7 @@ function feedUrl(publishedId: string, profileId: string | null): string {
 }
 
 export default function SubscribeDialog({ publishedId, cal, onImport }: Props) {
+  const { t } = useI18n()
   const [profileId, setProfileId] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const url = feedUrl(publishedId, profileId)
@@ -32,16 +34,13 @@ export default function SubscribeDialog({ publishedId, cal, onImport }: Props) {
 
   return (
     <div className="card" style={{ background: 'var(--surface-2)' }}>
-      <div className="section-title">Suscribirse a este calendario</div>
-      <p className="help">
-        Elige el perfil y copia la URL en tu app de calendario (Google Calendar, Apple, Outlook…). Se
-        actualizará automáticamente cuando el calendario cambie por Pull Request.
-      </p>
+      <div className="section-title">{t('published.subscribeTitle')}</div>
+      <p className="help">{t('published.subscribeHelp')}</p>
       <div className="field-row" style={{ alignItems: 'flex-end' }}>
         <div className="field" style={{ flex: 1 }}>
-          <label>Perfil</label>
+          <label>{t('common.profile')}</label>
           <select value={profileId ?? ''} onChange={(e) => setProfileId(e.target.value || null)}>
-            <option value="">Todos los perfiles</option>
+            <option value="">{t('common.allProfiles')}</option>
             {cal.profiles.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.name}
@@ -51,21 +50,21 @@ export default function SubscribeDialog({ publishedId, cal, onImport }: Props) {
         </div>
       </div>
       <div className="field">
-        <label>URL de suscripción (webcal)</label>
+        <label>{t('published.subscribeUrlLabel')}</label>
         <input type="text" readOnly value={url} onFocus={(e) => e.target.select()} />
       </div>
       <div className="btn-group">
         <a className="btn btn-primary" href={url}>
-          Suscribirse
+          {t('published.subscribe')}
         </a>
         <button className="btn" onClick={copy}>
-          {copied ? '✓ Copiada' : 'Copiar URL'}
+          {copied ? t('published.copied') : t('published.copyUrl')}
         </button>
-        <button className="btn" onClick={() => downloadICS(cal, profileId)}>
-          Descargar .ics
+        <button className="btn" onClick={() => downloadICS(cal, profileId, occurrenceLabels(t))}>
+          {t('published.downloadIcs')}
         </button>
-        <button className="btn" onClick={onImport} title="Cargar una copia editable en tu editor">
-          Copiar a mi editor
+        <button className="btn" onClick={onImport} title={t('published.copyToEditorTitle')}>
+          {t('published.copyToEditor')}
         </button>
       </div>
     </div>

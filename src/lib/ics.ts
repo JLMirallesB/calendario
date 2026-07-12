@@ -1,12 +1,17 @@
 import type { Calendar } from '../types'
-import { buildICS } from './icsCore'
+import { buildICS, type OccurrenceLabels } from './icsCore'
 
 export { buildICS, expandOccurrences } from './icsCore'
-export type { Occurrence, OccurrenceKind } from './icsCore'
+export type { Occurrence, OccurrenceKind, OccurrenceLabels } from './icsCore'
 
 /** Dispara la descarga de un fichero .ics para el calendario y perfil dados. */
-export function downloadICS(cal: Calendar, profileId: string | null, filename?: string): void {
-  const text = buildICS(cal, profileId, { calName: cal.name })
+export function downloadICS(
+  cal: Calendar,
+  profileId: string | null,
+  labels?: OccurrenceLabels,
+  filename?: string,
+): void {
+  const text = buildICS(cal, profileId, { calName: cal.name, labels })
   const blob = new Blob([text], { type: 'text/calendar;charset=utf-8' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')

@@ -1,25 +1,27 @@
 import { AUTHOR, REPO_URL } from '../../config'
+import { useI18n } from '../../i18n'
 
 export default function Footer() {
+  const { t } = useI18n()
   return (
     <footer className="site-footer">
       <div className="inner">
         <span>
-          App diseñada por{' '}
+          {t('footer.designedBy')}{' '}
           <a href={AUTHOR.site} target="_blank" rel="noreferrer">
             {AUTHOR.name} (jlmirall.es)
           </a>{' '}
-          con ayuda de Claude.
+          {t('footer.withClaude')}
         </span>
         <span className="sep">·</span>
         <a href={REPO_URL} target="_blank" rel="noreferrer">
-          Repositorio
+          {t('footer.repo')}
         </a>
         <span className="sep">·</span>
-        <a href={`mailto:${AUTHOR.email}`}>Contacto</a>
+        <a href={`mailto:${AUTHOR.email}`}>{t('footer.contact')}</a>
         <span className="sep">·</span>
         <a href={AUTHOR.kofi} target="_blank" rel="noreferrer">
-          Invitar a una orxata ☕
+          {t('footer.kofi')}
         </a>
       </div>
     </footer>

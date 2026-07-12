@@ -1,9 +1,12 @@
 import { NavLink, useNavigate } from 'react-router-dom'
-import { APP_EMOJI, APP_NAME, APP_TAGLINE, APP_VERSION } from '../../config'
+import { APP_EMOJI, APP_NAME, APP_VERSION } from '../../config'
+import { useI18n } from '../../i18n'
 import ThemeToggle from './ThemeToggle'
+import LanguageSelect from './LanguageSelect'
 
 export default function Header() {
   const navigate = useNavigate()
+  const { t } = useI18n()
   return (
     <header className="site-header">
       <div className="inner">
@@ -12,21 +15,18 @@ export default function Header() {
             {APP_EMOJI}
           </span>
           <span>{APP_NAME}</span>
-          <span className="tagline">{APP_TAGLINE}</span>
-          <button
-            className="version-tag"
-            title="Ver el historial de cambios"
-            onClick={() => navigate('/changelog')}
-          >
+          <span className="tagline">{t('header.tagline')}</span>
+          <button className="version-tag" title={t('header.changelogTitle')} onClick={() => navigate('/changelog')}>
             v{APP_VERSION}
           </button>
         </div>
         <nav className="header-nav">
           <NavLink to="/" end>
-            Editor
+            {t('header.editor')}
           </NavLink>
-          <NavLink to="/print">Imprimir / PDF</NavLink>
-          <NavLink to="/publicados">Publicados</NavLink>
+          <NavLink to="/print">{t('header.print')}</NavLink>
+          <NavLink to="/publicados">{t('header.published')}</NavLink>
+          <LanguageSelect />
           <ThemeToggle />
         </nav>
       </div>

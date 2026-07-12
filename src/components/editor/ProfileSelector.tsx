@@ -1,4 +1,5 @@
 import type { Profile } from '../../types'
+import { useI18n } from '../../i18n'
 
 interface Props {
   profiles: Profile[]
@@ -11,6 +12,7 @@ interface Props {
  * Selector de perfiles a los que es visible una fecha. Lista vacía = visible para todos.
  */
 export default function ProfileSelector({ profiles, selected, onChange, compact }: Props) {
+  const { t } = useI18n()
   const toggle = (id: string) => {
     onChange(selected.includes(id) ? selected.filter((x) => x !== id) : [...selected, id])
   }
@@ -18,7 +20,7 @@ export default function ProfileSelector({ profiles, selected, onChange, compact 
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
       {!compact && (
         <span className="inline-note" style={{ marginRight: 2 }}>
-          Visible para:
+          {t('events.visibleFor')}
         </span>
       )}
       {profiles.map((p) => {
@@ -32,14 +34,13 @@ export default function ProfileSelector({ profiles, selected, onChange, compact 
             style={{ color: on ? p.color : 'var(--text-muted)' }}
             onClick={() => toggle(p.id)}
             onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && toggle(p.id)}
-            title={on ? `Visible para ${p.name}` : `Marcar visible para ${p.name}`}
           >
             <span className="dot" style={{ background: p.color }} />
             {p.name}
           </span>
         )
       })}
-      {selected.length === 0 && <span className="inline-note">(todos los perfiles)</span>}
+      {selected.length === 0 && <span className="inline-note">{t('common.allProfilesNote')}</span>}
     </div>
   )
 }
