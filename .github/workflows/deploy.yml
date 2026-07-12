@@ -37,6 +37,10 @@ jobs:
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
+        with:
+          # Activa GitHub Pages automáticamente en el primer despliegue (usa el
+          # permiso pages: write). Evita tener que activarlo a mano en Settings.
+          enablement: true
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
