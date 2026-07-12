@@ -1,0 +1,156 @@
+/* ---------- Vista de impresión (lista y calendario compacto) ---------- */
+
+.print-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.print-sheet {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-top: 20px;
+}
+.print-sheet h1 {
+  font-size: 22px;
+  margin-bottom: 2px;
+}
+.print-sheet .subtitle {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+/* Lista por meses */
+.month-block {
+  break-inside: avoid;
+  margin-bottom: 14px;
+}
+.month-block h3 {
+  font-size: 15px;
+  text-transform: capitalize;
+  border-bottom: 2px solid var(--accent);
+  padding-bottom: 4px;
+  margin-bottom: 8px;
+}
+.occ-row {
+  display: flex;
+  gap: 10px;
+  padding: 4px 0;
+  align-items: baseline;
+  font-size: 14px;
+  break-inside: avoid;
+}
+.occ-row .date {
+  flex: 0 0 130px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.occ-row .swatch-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  flex: none;
+  align-self: center;
+}
+
+/* Calendario compacto */
+.compact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 16px;
+}
+.mini-month {
+  break-inside: avoid;
+}
+.mini-month h4 {
+  text-transform: capitalize;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+table.mini {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 12px;
+  table-layout: fixed;
+}
+table.mini th {
+  color: var(--text-muted);
+  font-weight: 600;
+  padding: 2px 0;
+  text-align: center;
+  font-size: 11px;
+}
+table.mini td {
+  text-align: center;
+  padding: 3px 0;
+  border-radius: 4px;
+  height: 24px;
+  position: relative;
+  border: 1px solid transparent;
+}
+table.mini td.out {
+  color: transparent;
+}
+table.mini td.nonlective {
+  color: var(--text-muted);
+}
+table.mini td.lective {
+  background: color-mix(in srgb, var(--lective) 14%, transparent);
+}
+table.mini td.vac {
+  background: color-mix(in srgb, var(--vacaciones) 22%, transparent);
+}
+table.mini td.fest {
+  background: color-mix(in srgb, var(--festivo) 20%, transparent);
+  color: var(--festivo);
+  font-weight: 700;
+}
+table.mini td .ev-dot {
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+@media print {
+  @page {
+    margin: 12mm;
+  }
+  .site-header,
+  .site-footer,
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+    color: #000;
+    font-size: 12px;
+  }
+  .app-main {
+    padding: 0;
+    max-width: none;
+  }
+  .print-sheet {
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+  .compact-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  table.mini td.lective,
+  table.mini td.vac,
+  table.mini td.fest {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
