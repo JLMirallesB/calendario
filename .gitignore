@@ -9,3 +9,7 @@ dist-ssr
 # Feeds ICS generados automáticamente por scripts/build-feeds.mjs
 public/feeds/*
 !public/feeds/.gitkeep
+
+# Documentación interna del proyecto (solo local, no se sube al remoto)
+CLAUDE.md
+docs/PLAN.md
