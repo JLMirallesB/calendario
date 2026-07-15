@@ -1,12 +1,14 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { APP_EMOJI, APP_NAME, APP_VERSION } from '../../config'
 import { useI18n } from '../../i18n'
+import { useStore } from '../../state/CalendarStore'
 import ThemeToggle from './ThemeToggle'
 import LanguageSelect from './LanguageSelect'
 
 export default function Header() {
   const navigate = useNavigate()
   const { t } = useI18n()
+  const { current } = useStore()
   return (
     <header className="site-header">
       <div className="inner">
@@ -22,9 +24,10 @@ export default function Header() {
         </div>
         <nav className="header-nav">
           <NavLink to="/" end>
-            {t('header.editor')}
+            {t('header.home')}
           </NavLink>
-          <NavLink to="/print">{t('header.print')}</NavLink>
+          {current && <NavLink to="/editor">{t('header.editor')}</NavLink>}
+          {current && <NavLink to="/print">{t('header.print')}</NavLink>}
           <NavLink to="/publicados">{t('header.published')}</NavLink>
           <LanguageSelect />
           <ThemeToggle />

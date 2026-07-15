@@ -80,6 +80,18 @@ export function mondayOf(iso: ISODate): ISODate {
   return toISO(d)
 }
 
+/** Días de calendario entre dos fechas (b - a); negativo si b < a. */
+export function daysBetween(a: ISODate, b: ISODate): number {
+  return Math.round((parseISO(b).getTime() - parseISO(a).getTime()) / 86400000)
+}
+
+/** Lunes más cercano a la fecha dada (el de su semana o el siguiente, el que menos diste). */
+export function nearestMonday(iso: ISODate): ISODate {
+  const prev = mondayOf(iso)
+  const next = addDays(prev, 7)
+  return daysBetween(prev, iso) <= daysBetween(iso, next) ? prev : next
+}
+
 /** Número de semanas (lunes-domingo) distintas que abarca el rango. */
 export function weeksSpanned(start: ISODate, end: ISODate): number {
   if (!start || !end || parseISO(start) > parseISO(end)) return 0

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { useStore } from '../../state/CalendarStore'
 import { downloadICS } from '../../lib/ics'
 import { occurrenceLabels, useI18n } from '../../i18n'
@@ -14,7 +14,7 @@ export default function PrintView() {
   const [profileId, setProfileId] = useState<string | null>(null) // null = todos
   const [mode, setMode] = useState<Mode>('lista')
 
-  if (!current) return <p>{t('common.loading')}</p>
+  if (!current) return <Navigate to="/" replace />
   const cal = current
   const profileName = profileId ? cal.profiles.find((p) => p.id === profileId)?.name : t('common.allProfiles')
 
@@ -23,7 +23,7 @@ export default function PrintView() {
       <div className="card no-print">
         <div className="card-header">
           <h2>{t('print.title')}</h2>
-          <Link to="/" className="btn btn-sm">
+          <Link to="/editor" className="btn btn-sm">
             {t('print.backToEditor')}
           </Link>
         </div>

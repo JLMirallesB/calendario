@@ -31,7 +31,8 @@ const GUIDED_LABELS = {
   pruebaEvaluacionTeorica: 'Prueba de evaluación teórica',
   sesionEvaluacion: 'Sesión de evaluación',
   itacaNotasInicio: 'Inicio de notas en ITACA',
-  itacaNotasUltimaModif: 'Última modificación de notas en ITACA',
+  itacaNotasFinDocentes: 'Fin de introducción de notas por docentes',
+  itacaNotasFinRectificacion: 'Fin de rectificación de notas por Equipo Directivo',
   webFamiliaVisibilidad: 'Visibilidad de notas en WebFamília',
   impresionActas: 'Impresión de actas',
   firmaActas: 'Firma de actas',
@@ -56,7 +57,6 @@ const KIND_TITLES = {
 
 const DEFAULT_LABELS = { kind: KIND_TITLES, guided: GUIDED_LABELS, startPrefix: 'Inicio' }
 
-const RANGE_KEYS = new Set(['plazoReclamacion'])
 
 /**
  * Expande un calendario a una lista de ocurrencias con fecha concreta, filtradas por
@@ -112,11 +112,11 @@ export function expandOccurrences(calendar, profileId, labels) {
         const value = term.guided[key]
         if (!value) continue
         const label = guidedLabels[key] || GUIDED_LABELS[key]
-        if (RANGE_KEYS.has(key)) {
-          if (value.start && value.end) {
+        if (value.range) {
+          if (value.range.start && value.range.end) {
             out.push({
-              startISO: value.start,
-              endISO: value.end,
+              startISO: value.range.start,
+              endISO: value.range.end,
               title: `${label} · ${term.name}`,
               provisional: !!value.provisional,
               kind: 'guided',

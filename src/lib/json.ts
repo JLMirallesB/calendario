@@ -1,10 +1,10 @@
 import type {
   Calendar,
+  CalendarSource,
   CalEvent,
-  DateValue,
   GuidedFields,
+  GuidedValue,
   Profile,
-  RangeValue,
   Term,
   TermType,
 } from '../types'
@@ -40,27 +40,29 @@ export function makeId(prefix = 'id'): string {
   return `${prefix}_${Math.random().toString(36).slice(2, 10)}`
 }
 
-function emptyDate(): DateValue {
-  return { date: null, provisional: false }
+function emptyGuidedValue(): GuidedValue {
+  return { date: null, range: null, provisional: false }
 }
-function emptyRange(): RangeValue {
-  return { start: null, end: null, provisional: false }
+/** Hito en modo rango (vacío). Se usa para los que por defecto conviene que sean rango. */
+function emptyRangeGuided(): GuidedValue {
+  return { date: null, range: { start: null, end: null }, provisional: false }
 }
 
 export function emptyGuided(): GuidedFields {
   return {
-    pruebaEvaluacionTeorica: emptyDate(),
-    sesionEvaluacion: emptyDate(),
-    itacaNotasInicio: emptyDate(),
-    itacaNotasUltimaModif: emptyDate(),
-    webFamiliaVisibilidad: emptyDate(),
-    impresionActas: emptyDate(),
-    firmaActas: emptyDate(),
-    plazoReclamacion: emptyRange(),
-    anticipacionSolicitudInicio: emptyDate(),
-    anticipacionSolicitudFin: emptyDate(),
-    anticipacionListadoProvisional: emptyDate(),
-    anticipacionListadoDefinitivo: emptyDate(),
+    pruebaEvaluacionTeorica: emptyGuidedValue(),
+    sesionEvaluacion: emptyGuidedValue(),
+    itacaNotasInicio: emptyGuidedValue(),
+    itacaNotasFinDocentes: emptyGuidedValue(),
+    itacaNotasFinRectificacion: emptyGuidedValue(),
+    webFamiliaVisibilidad: emptyGuidedValue(),
+    impresionActas: emptyGuidedValue(),
+    firmaActas: emptyGuidedValue(),
+    plazoReclamacion: emptyRangeGuided(),
+    anticipacionSolicitudInicio: emptyGuidedValue(),
+    anticipacionSolicitudFin: emptyGuidedValue(),
+    anticipacionListadoProvisional: emptyGuidedValue(),
+    anticipacionListadoDefinitivo: emptyGuidedValue(),
   }
 }
 
@@ -92,8 +94,7 @@ export function defaultProfiles(lang: Lang = 'es'): Profile[] {
   return [
     { id: 'docentes', name: d.profileDocentes, color: '#2563eb' },
     { id: 'alumnado', name: d.profileAlumnado, color: '#16a34a' },
-    { id: 'familias', name: d.profileFamilias, color: '#d97706' },
-    { id: 'admin', name: d.profileAdmin, color: '#9333ea' },
+    { id: 'gestion', name: d.profileGestion, color: '#9333ea' },
   ]
 }
 
@@ -141,13 +142,20 @@ function asStrArray(v: unknown): string[] {
   return Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : []
 }
 
-function coerceDate(v: unknown): DateValue {
+/**
+ * Normaliza un hito guiado. Modo rango si trae `range` (objeto) o —migración del antiguo
+ * `RangeValue`— `start`/`end` en la raíz; en otro caso modo puntual (`date`).
+ */
+function coerceGuidedValue(v: unknown): GuidedValue {
   const o = (v ?? {}) as Record<string, unknown>
-  return { date: asISOorNull(o.date), provisional: asBool(o.provisional) }
-}
-function coerceRange(v: unknown): RangeValue {
-  const o = (v ?? {}) as Record<string, unknown>
-  return { start: asISOorNull(o.start), end: asISOorNull(o.end), provisional: asBool(o.provisional) }
+  let range: GuidedValue['range'] = null
+  if (o.range && typeof o.range === 'object') {
+    const r = o.range as Record<string, unknown>
+    range = { start: asISOorNull(r.start), end: asISOorNull(r.end) }
+  } else if (isValidISO(o.start) || isValidISO(o.end)) {
+    range = { start: asISOorNull(o.start), end: asISOorNull(o.end) }
+  }
+  return { date: asISOorNull(o.date), range, provisional: asBool(o.provisional) }
 }
 
 function coerceGuided(v: unknown): GuidedFields {
@@ -155,18 +163,21 @@ function coerceGuided(v: unknown): GuidedFields {
   const base = emptyGuided()
   return {
     ...base,
-    pruebaEvaluacionTeorica: coerceDate(o.pruebaEvaluacionTeorica),
-    sesionEvaluacion: coerceDate(o.sesionEvaluacion),
-    itacaNotasInicio: coerceDate(o.itacaNotasInicio),
-    itacaNotasUltimaModif: coerceDate(o.itacaNotasUltimaModif),
-    webFamiliaVisibilidad: coerceDate(o.webFamiliaVisibilidad),
-    impresionActas: coerceDate(o.impresionActas),
-    firmaActas: coerceDate(o.firmaActas),
-    plazoReclamacion: coerceRange(o.plazoReclamacion),
-    anticipacionSolicitudInicio: coerceDate(o.anticipacionSolicitudInicio),
-    anticipacionSolicitudFin: coerceDate(o.anticipacionSolicitudFin),
-    anticipacionListadoProvisional: coerceDate(o.anticipacionListadoProvisional),
-    anticipacionListadoDefinitivo: coerceDate(o.anticipacionListadoDefinitivo),
+    pruebaEvaluacionTeorica: coerceGuidedValue(o.pruebaEvaluacionTeorica),
+    sesionEvaluacion: coerceGuidedValue(o.sesionEvaluacion),
+    itacaNotasInicio: coerceGuidedValue(o.itacaNotasInicio),
+    // Migración: el antiguo `itacaNotasUltimaModif` pasa a «fin de introducción por docentes».
+    itacaNotasFinDocentes: coerceGuidedValue(o.itacaNotasFinDocentes ?? o.itacaNotasUltimaModif),
+    itacaNotasFinRectificacion: coerceGuidedValue(o.itacaNotasFinRectificacion),
+    webFamiliaVisibilidad: coerceGuidedValue(o.webFamiliaVisibilidad),
+    impresionActas: coerceGuidedValue(o.impresionActas),
+    firmaActas: coerceGuidedValue(o.firmaActas),
+    // Ausente → se mantiene en modo rango (valor por defecto de este hito).
+    plazoReclamacion: coerceGuidedValue(o.plazoReclamacion ?? { range: { start: null, end: null } }),
+    anticipacionSolicitudInicio: coerceGuidedValue(o.anticipacionSolicitudInicio),
+    anticipacionSolicitudFin: coerceGuidedValue(o.anticipacionSolicitudFin),
+    anticipacionListadoProvisional: coerceGuidedValue(o.anticipacionListadoProvisional),
+    anticipacionListadoDefinitivo: coerceGuidedValue(o.anticipacionListadoDefinitivo),
   }
 }
 
@@ -215,6 +226,28 @@ function coerceEvent(v: unknown): CalEvent {
     provisional: asBool(o.provisional),
     profiles: asStrArray(o.profiles),
     notes: asStr(o.notes),
+    // Se conserva la procedencia solo si viene como cadena; ausente = evento manual.
+    ...(typeof o.srcKey === 'string' ? { srcKey: o.srcKey } : {}),
+  }
+}
+
+/** Conserva el bloque de procedencia externa solo si tiene un `provider` válido. */
+function coerceSource(v: unknown): CalendarSource | undefined {
+  if (!v || typeof v !== 'object') return undefined
+  const o = v as Record<string, unknown>
+  if (typeof o.provider !== 'string' || !o.provider) return undefined
+  return {
+    provider: o.provider,
+    manifestUrl: asStr(o.manifestUrl),
+    courseUrl: asStr(o.courseUrl),
+    course: asStr(o.course),
+    municipio: asStr(o.municipio),
+    municipioName: asStr(o.municipioName),
+    ensenyanca: asStr(o.ensenyanca),
+    ensenyancaName: asStr(o.ensenyancaName),
+    schema: asStr(o.schema),
+    version: typeof o.version === 'number' ? o.version : 0,
+    seenUpdated: asStr(o.seenUpdated),
   }
 }
 
@@ -238,6 +271,7 @@ export function coerceCalendar(v: unknown): Calendar {
     : defaultProfiles()
   const terms = Array.isArray(o.terms) && o.terms.length ? o.terms.map(coerceTerm) : defaultTerms()
   const events = Array.isArray(o.events) ? o.events.map(coerceEvent) : []
+  const source = coerceSource(o.source)
   return {
     id: asStr(o.id, makeId('cal')),
     name: asStr(o.name, 'Calendario importado'),
@@ -248,6 +282,7 @@ export function coerceCalendar(v: unknown): Calendar {
     profiles,
     terms,
     events,
+    ...(source ? { source } : {}),
     schemaVersion: SCHEMA_VERSION,
     updatedAt: asStr(o.updatedAt) || new Date().toISOString(),
   }

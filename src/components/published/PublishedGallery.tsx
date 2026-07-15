@@ -54,7 +54,7 @@ export default function PublishedGallery() {
     importCalendar(
       coerceCalendar({ ...selected.cal, id: undefined, name: `${selected.cal.name} (${t('published.copySuffix')})` }),
     )
-    navigate('/')
+    navigate('/editor')
   }
 
   if (selected) {

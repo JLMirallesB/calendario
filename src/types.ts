@@ -31,21 +31,34 @@ export interface RangeValue {
   provisional: boolean
 }
 
+/**
+ * Valor de un hito del modo guiado. Puede ser **puntual** (`date`) o **rango** (`range`),
+ * a elección del usuario: si `range` no es null, el hito está en modo rango.
+ */
+export interface GuidedValue {
+  date: ISODate | null
+  range: { start: ISODate | null; end: ISODate | null } | null
+  provisional: boolean
+}
+
 /** Hitos administrativos del modo guiado, comunes a los trimestres. */
 export interface GuidedFields {
-  pruebaEvaluacionTeorica: DateValue
-  sesionEvaluacion: DateValue
-  itacaNotasInicio: DateValue
-  itacaNotasUltimaModif: DateValue
-  webFamiliaVisibilidad: DateValue
-  impresionActas: DateValue
-  firmaActas: DateValue
-  plazoReclamacion: RangeValue
+  pruebaEvaluacionTeorica: GuidedValue
+  sesionEvaluacion: GuidedValue
+  itacaNotasInicio: GuidedValue
+  /** Fecha fin de introducción de notas por docentes. */
+  itacaNotasFinDocentes: GuidedValue
+  /** Fecha fin de rectificación de notas por el Equipo Directivo. */
+  itacaNotasFinRectificacion: GuidedValue
+  webFamiliaVisibilidad: GuidedValue
+  impresionActas: GuidedValue
+  firmaActas: GuidedValue
+  plazoReclamacion: GuidedValue
   // Solo relevantes para el trimestre de Anticipación:
-  anticipacionSolicitudInicio: DateValue
-  anticipacionSolicitudFin: DateValue
-  anticipacionListadoProvisional: DateValue
-  anticipacionListadoDefinitivo: DateValue
+  anticipacionSolicitudInicio: GuidedValue
+  anticipacionSolicitudFin: GuidedValue
+  anticipacionListadoProvisional: GuidedValue
+  anticipacionListadoDefinitivo: GuidedValue
 }
 
 export interface Term {
@@ -83,6 +96,28 @@ export interface CalEvent {
   /** IDs de perfiles a los que es visible. Vacío = visible para todos. */
   profiles: string[]
   notes: string
+  /**
+   * Clave estable de procedencia para eventos generados desde una fuente externa
+   * (p. ej. el dataset de legislación CV). Permite re-sincronizar sin pisar los
+   * eventos creados a mano (que no llevan `srcKey`). Ausente = evento del usuario.
+   */
+  srcKey?: string
+}
+
+/** Procedencia de un calendario creado a partir de una fuente externa. */
+export interface CalendarSource {
+  provider: string // p. ej. "cev-legis"
+  manifestUrl: string
+  courseUrl: string
+  course: string
+  municipio: string // slug/code del municipio
+  municipioName: string
+  ensenyanca: string // code de la enseñanza
+  ensenyancaName: string
+  schema: string
+  version: number
+  /** Valor de `manifest.updated` visto al importar; sirve para detectar cambios. */
+  seenUpdated: string
 }
 
 export interface Calendar {
@@ -97,6 +132,8 @@ export interface Calendar {
   profiles: Profile[]
   terms: Term[]
   events: CalEvent[]
+  /** Procedencia externa (si el calendario se creó desde un dataset). Opcional. */
+  source?: CalendarSource
   /** Versión del esquema de datos, para migraciones futuras. */
   schemaVersion: number
   updatedAt: string // ISO datetime

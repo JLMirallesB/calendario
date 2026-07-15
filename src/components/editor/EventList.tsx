@@ -3,6 +3,7 @@ import type { CalEvent, EventKind, Profile } from '../../types'
 import { newEvent } from '../../lib/json'
 import { useI18n } from '../../i18n'
 import ProfileSelector from './ProfileSelector'
+import Section from './Section'
 
 interface Props {
   title: string
@@ -10,6 +11,7 @@ interface Props {
   kinds: EventKind[]
   events: CalEvent[]
   profiles: Profile[]
+  sectionId?: string
   onChange: (events: CalEvent[]) => void
 }
 
@@ -17,7 +19,7 @@ interface Props {
  * Editor reutilizable para una familia de eventos (vacaciones/festivos, institucionales,
  * otros…). Cada evento admite fecha puntual o rango, marca de provisional y perfiles.
  */
-export default function EventList({ title, help, kinds, events, profiles, onChange }: Props) {
+export default function EventList({ title, help, kinds, events, profiles, sectionId, onChange }: Props) {
   const { t } = useI18n()
   const mine = events.filter((e) => kinds.includes(e.kind))
   const others = events.filter((e) => !kinds.includes(e.kind))
@@ -35,13 +37,15 @@ export default function EventList({ title, help, kinds, events, profiles, onChan
   const remove = (id: string) => commit(mine.filter((e) => e.id !== id))
 
   return (
-    <div className="card">
-      <div className="card-header">
-        <h3>{title}</h3>
+    <Section
+      title={title}
+      sectionId={sectionId}
+      headerExtra={
         <button className="btn btn-sm btn-primary" onClick={add}>
           + {t('common.add')}
         </button>
-      </div>
+      }
+    >
       {help && <p className="help">{help}</p>}
       {mine.length === 0 && <p className="empty">{t('events.empty')}</p>}
       {mine.map((ev) => (
@@ -54,7 +58,7 @@ export default function EventList({ title, help, kinds, events, profiles, onChan
           onRemove={() => remove(ev.id)}
         />
       ))}
-    </div>
+    </Section>
   )
 }
 
@@ -87,7 +91,7 @@ function EventRow({
   }
 
   return (
-    <div className="list-item">
+    <div id={`ev-${ev.id}`} className="list-item">
       <div className="grow" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         <div className="field-row">
           <div className="field" style={{ flex: 2 }}>

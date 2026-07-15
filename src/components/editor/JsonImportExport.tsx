@@ -3,6 +3,7 @@ import type { Calendar } from '../../types'
 import { parseCalendar, serializeCalendar } from '../../lib/json'
 import { slug } from '../../lib/ics'
 import { useI18n } from '../../i18n'
+import Section from './Section'
 
 interface Props {
   cal: Calendar
@@ -36,10 +37,7 @@ export default function JsonImportExport({ cal, onImport }: Props) {
   }
 
   return (
-    <div className="card">
-      <div className="card-header">
-        <h2>{t('jsonio.title')}</h2>
-      </div>
+    <Section title={t('jsonio.title')} defaultOpen={false} sectionId="json">
       <p className="help">{t('jsonio.help')}</p>
       <div className="btn-group">
         <button className="btn btn-primary" onClick={exportJson}>
@@ -67,6 +65,6 @@ export default function JsonImportExport({ cal, onImport }: Props) {
           {msg}
         </p>
       )}
-    </div>
+    </Section>
   )
 }

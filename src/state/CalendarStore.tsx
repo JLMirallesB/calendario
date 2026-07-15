@@ -41,8 +41,8 @@ function loadState(): StoredState {
   } catch {
     /* datos corruptos: empezar de cero */
   }
-  const first = newCalendar('Curso 2025-2026', getLang())
-  return { calendars: [first], currentId: first.id }
+  // Sin calendarios: estado vacío → la app muestra la página de bienvenida.
+  return { calendars: [], currentId: null }
 }
 
 export function CalendarStoreProvider({ children }: { children: ReactNode }) {
@@ -82,8 +82,8 @@ export function CalendarStoreProvider({ children }: { children: ReactNode }) {
     setState((s) => {
       const remaining = s.calendars.filter((c) => c.id !== id)
       if (!remaining.length) {
-        const fresh = newCalendar('Curso 2025-2026', getLang())
-        return { calendars: [fresh], currentId: fresh.id }
+        // No queda ninguno: volver al estado vacío (página de bienvenida).
+        return { calendars: [], currentId: null }
       }
       const currentId = s.currentId === id ? remaining[0].id : s.currentId
       return { calendars: remaining, currentId }

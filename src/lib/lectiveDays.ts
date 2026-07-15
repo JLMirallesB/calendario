@@ -1,11 +1,79 @@
 import type { Calendar, CalEvent, ISODate, Term } from '../types'
-import { addDays, eachDay, parseISO, weekday, weeksSpanned, WEEKDAY_ORDER, WEEKDAY_NAMES } from './dateUtils'
+import {
+  addDays,
+  daysBetween,
+  eachDay,
+  nearestMonday,
+  parseISO,
+  weekday,
+  weeksSpanned,
+  WEEKDAY_ORDER,
+  WEEKDAY_NAMES,
+} from './dateUtils'
+
+/**
+ * Reparte el curso en tres trimestres de duración (en días de calendario) lo más
+ * igual posible, alineando el inicio del 2.º y 3.º trimestre al lunes más cercano.
+ * El 1.º empieza el primer día de curso. Devuelve las tres fechas de inicio (ISO).
+ */
+export function equalTrimesterStarts(
+  courseStart: ISODate,
+  courseEnd: ISODate,
+): { primer: ISODate; segundo: ISODate; tercer: ISODate } {
+  const total = daysBetween(courseStart, courseEnd)
+  const segundo = nearestMonday(addDays(courseStart, Math.round(total / 3)))
+  const tercer = nearestMonday(addDays(courseStart, Math.round((2 * total) / 3)))
+  return { primer: courseStart, segundo, tercer }
+}
 
 /** Expande un evento a la lista de fechas ISO que ocupa (puntual o rango). */
 export function eventDates(ev: CalEvent): ISODate[] {
   if (ev.date) return [ev.date]
   if (ev.range) return eachDay(ev.range.start, ev.range.end)
   return []
+}
+
+interface HabilSets {
+  festivo: Set<ISODate> // festivos autonómicos y locales (inhábiles)
+  overrides: Set<ISODate> // festivos convertidos en lectivo (hábiles)
+}
+function habilSets(cal: Calendar): HabilSets {
+  const festivo = new Set<ISODate>()
+  const overrides = new Set<ISODate>()
+  for (const ev of cal.events) {
+    if (ev.kind === 'festivoAutonomico' || ev.kind === 'festivoLocal') {
+      eventDates(ev).forEach((d) => festivo.add(d))
+    } else if (ev.kind === 'festivoALectivo') {
+      eventDates(ev).forEach((d) => overrides.add(d))
+    }
+  }
+  return { festivo, overrides }
+}
+
+/** Día hábil (administrativo): no sábado/domingo y no festivo (autonómico/local). */
+export function isHabil(cal: Calendar, iso: ISODate, sets?: HabilSets): boolean {
+  const wd = weekday(iso)
+  if (wd === 0 || wd === 6) return false // domingo / sábado
+  const s = sets ?? habilSets(cal)
+  if (s.overrides.has(iso)) return true // festivo recuperado como lectivo → hábil
+  return !s.festivo.has(iso)
+}
+
+/**
+ * Plazo de reclamación: 3 días hábiles a computar desde el día siguiente a la fecha de
+ * comunicación (visibilidad de notas). Devuelve el primer y el tercer día hábil.
+ */
+export function reclamacionRange(cal: Calendar, comunicacion: ISODate): { start: ISODate; end: ISODate } {
+  const s = habilSets(cal)
+  let d = addDays(comunicacion, 1)
+  while (!isHabil(cal, d, s)) d = addDays(d, 1)
+  const start = d
+  let count = 1
+  while (count < 3) {
+    d = addDays(d, 1)
+    if (isHabil(cal, d, s)) count++
+  }
+  return { start, end: d }
 }
 
 interface LectiveSets {

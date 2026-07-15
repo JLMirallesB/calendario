@@ -25,3 +25,8 @@ export const AUTHOR = {
 
 export const STORAGE_KEY = 'calendari:data:v1'
 export const THEME_KEY = 'calendari:theme'
+
+// Dataset de legislación educativa de la Comunitat Valenciana (app «legis_cpmdem»).
+// Sitio estático en GitHub Pages; se consume por fetch (GET simple). Ver src/lib/cev.ts.
+export const CEV_DATASET_BASE = 'https://jlmirallesb.github.io/legis_cpmdem/data/calendario/'
+export const CEV_SCHEMA = 'cev-calendario-escolar'

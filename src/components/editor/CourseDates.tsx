@@ -1,6 +1,7 @@
 import type { Calendar } from '../../types'
 import { WEEKDAY_ORDER } from '../../lib/dateUtils'
 import { useI18n } from '../../i18n'
+import Section from './Section'
 
 interface Props {
   cal: Calendar
@@ -15,10 +16,7 @@ export default function CourseDates({ cal, onChange }: Props) {
     onChange({ restWeekdays: [...set].sort((a, b) => a - b) })
   }
   return (
-    <div className="card">
-      <div className="card-header">
-        <h2>{t('course.title')}</h2>
-      </div>
+    <Section title={t('course.title')} sectionId="course">
       <div className="field-row">
         <div className="field" style={{ flex: 2 }}>
           <label>{t('course.nameLabel')}</label>
@@ -68,6 +66,6 @@ export default function CourseDates({ cal, onChange }: Props) {
           ))}
         </div>
       </div>
-    </div>
+    </Section>
   )
 }

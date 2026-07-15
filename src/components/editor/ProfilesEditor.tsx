@@ -1,6 +1,7 @@
 import type { Calendar, Profile } from '../../types'
 import { makeId } from '../../lib/json'
 import { useI18n } from '../../i18n'
+import Section from './Section'
 
 interface Props {
   cal: Calendar
@@ -20,13 +21,15 @@ export default function ProfilesEditor({ cal, onChange }: Props) {
   const remove = (id: string) => onChange(cal.profiles.filter((p) => p.id !== id))
 
   return (
-    <div className="card">
-      <div className="card-header">
-        <h2>{t('profiles.title')}</h2>
+    <Section
+      title={t('profiles.title')}
+      sectionId="profiles"
+      headerExtra={
         <button className="btn btn-sm btn-primary" onClick={add}>
           {t('profiles.add')}
         </button>
-      </div>
+      }
+    >
       <p className="help">{t('profiles.help')}</p>
       {cal.profiles.map((p) => (
         <div key={p.id} className="list-item" style={{ alignItems: 'center' }}>
@@ -53,6 +56,6 @@ export default function ProfilesEditor({ cal, onChange }: Props) {
           </button>
         </div>
       ))}
-    </div>
+    </Section>
   )
 }
