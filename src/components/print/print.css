@@ -98,9 +98,6 @@ table.mini td.out {
 table.mini td.nonlective {
   color: var(--text-muted);
 }
-table.mini td.lective {
-  background: color-mix(in srgb, var(--lective) 14%, transparent);
-}
 table.mini td.vac {
   background: color-mix(in srgb, var(--vacaciones) 22%, transparent);
 }
@@ -172,6 +169,16 @@ table.mini td.term-start {
   background: transparent;
   box-shadow: inset 0 0 0 2px var(--provisional);
 }
+
+/* Festivo recuperado como lectivo: anillo verde (día lectivo, no vacaciones). */
+table.mini td.recovered {
+  box-shadow: inset 0 0 0 2px var(--lective);
+  font-weight: 700;
+}
+.recovered-swatch {
+  background: transparent;
+  box-shadow: inset 0 0 0 2px var(--lective);
+}
 table.mini td .ev-dot {
   position: absolute;
   bottom: 2px;
@@ -210,7 +217,6 @@ table.mini td .ev-dot {
   .compact-grid {
     grid-template-columns: repeat(3, 1fr);
   }
-  table.mini td.lective,
   table.mini td.vac,
   table.mini td.fest {
     -webkit-print-color-adjust: exact;

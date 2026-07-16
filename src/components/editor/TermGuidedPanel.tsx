@@ -6,10 +6,12 @@ import { useI18n } from '../../i18n'
 interface Props {
   cal: Calendar
   term: Term
+  open: boolean
+  onToggle: () => void
   onChange: (guided: GuidedFields) => void
 }
 
-export default function TermGuidedPanel({ cal, term, onChange }: Props) {
+export default function TermGuidedPanel({ cal, term, open, onToggle, onChange }: Props) {
   const { t } = useI18n()
   const items = guidedItemsForType(term.type)
   const missing = missingGuidedItems(term)
@@ -28,29 +30,39 @@ export default function TermGuidedPanel({ cal, term, onChange }: Props) {
 
   return (
     <div style={{ marginTop: 12, borderTop: '1px dashed var(--border)', paddingTop: 12 }}>
-      {missing.length > 0 && (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+        <button type="button" className="section-toggle" aria-expanded={open} onClick={onToggle}>
+          <span className="chevron" aria-hidden>
+            {open ? '▾' : '▸'}
+          </span>
+          <span className="section-title" style={{ margin: 0 }}>
+            {t('guided.milestones')}
+          </span>
+        </button>
+        {missing.length > 0 && <span className="inline-note">{t('guided.pending', { n: missing.length })}</span>}
+      </div>
+
+      {open && (
         <>
-          <div className="section-title">{t('guided.pending', { n: missing.length })}</div>
-          <ul className="warn-list">
-            {missing.map((m) => (
-              <li key={m.key}>{itemLabel(m.key)}</li>
-            ))}
-          </ul>
+          {missing.length > 0 && (
+            <ul className="warn-list" style={{ marginTop: 8 }}>
+              {missing.map((m) => (
+                <li key={m.key}>{itemLabel(m.key)}</li>
+              ))}
+            </ul>
+          )}
+          {items.map((it) => (
+            <GuidedRow
+              key={it.key}
+              anchorId={`guided-${term.id}-${it.key}`}
+              label={itemLabel(it.key)}
+              value={term.guided[it.key]}
+              note={it.key === 'plazoReclamacion' ? t('guided.reclamacionAuto') : undefined}
+              onChange={(v) => setField(it.key, v)}
+            />
+          ))}
         </>
       )}
-      <div className="section-title" style={{ marginTop: 12 }}>
-        {t('guided.milestones')}
-      </div>
-      {items.map((it) => (
-        <GuidedRow
-          key={it.key}
-          anchorId={`guided-${term.id}-${it.key}`}
-          label={itemLabel(it.key)}
-          value={term.guided[it.key]}
-          note={it.key === 'plazoReclamacion' ? t('guided.reclamacionAuto') : undefined}
-          onChange={(v) => setField(it.key, v)}
-        />
-      ))}
     </div>
   )
 }

@@ -129,6 +129,7 @@ export function occurrenceLabels(t: TFunc) {
   ]
   const guidedKeys = [
     'pruebaEvaluacionTeorica',
+    'semanaRevisionCalificaciones',
     'sesionEvaluacion',
     'itacaNotasInicio',
     'itacaNotasFinDocentes',

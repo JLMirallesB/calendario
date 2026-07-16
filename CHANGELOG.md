@@ -4,6 +4,32 @@ Todas las novedades relevantes de la app se documentan en este archivo.
 El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/) y el
 proyecto usa [versionado semántico](https://semver.org/lang/es/).
 
+## [0.6.0] — 2026-07-16
+
+### Añadido
+
+- **Nuevo hito guiado**: «Semana de revisión de calificaciones» (entre la prueba teórica y la
+  sesión de evaluación), por defecto en modo rango.
+- **Trimestres colapsables** individualmente, con separación visual por bloques; y el **modo
+  guiado se puede plegar** (con su chevron) sin necesidad de desactivarlo.
+- **Mover un trimestre por semanas** ahora pregunta si mover también todos sus hitos, y
+  **avisa** si alguno caería en día no lectivo antes de aplicarlo.
+- **Ordinaria/Final ↔ 3.º trimestre**: botón para **copiar** las fechas e hitos del 3.º, y un
+  **sincronizado permanente** (editar uno actualiza el otro; al activar con datos distintos
+  pregunta qué trimestre prevalece).
+- **Leyenda del calendario compacto más completa** (vacaciones, festivo, inicio de trimestre,
+  festivo recuperado, evento/hito, no lectivo) con nota sobre los días lectivos.
+
+### Cambiado
+
+- El **calendario compacto** ya no pinta en verde los días lectivos (se deducen del rango de
+  curso); solo se resaltan vacaciones, festivos e inicios de trimestre.
+
+### Corregido
+
+- Un **festivo convertido en lectivo** que caía dentro de un periodo vacacional ya no se
+  muestra como vacaciones en el compacto: se marca como día lectivo recuperado (anillo verde).
+
 ## [0.5.0] — 2026-07-15
 
 ### Añadido

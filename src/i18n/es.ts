@@ -155,6 +155,21 @@ export const es = {
     week: 'semana',
     weekEarlier: 'Adelantar el inicio una semana',
     weekLater: 'Retrasar el inicio una semana',
+    moveMilestonesConfirm:
+      'Aceptar = mover también todos los hitos del trimestre la misma semana.\nCancelar = mover solo el inicio del trimestre.',
+    milestoneCollision:
+      'Aviso: tras moverlos, estos hitos caerían en día no lectivo:\n{list}\n\n¿Continuar de todas formas?',
+    linkOrdinaria: 'Igualar fechas al 3.º trimestre',
+    linkOrdinariaTitle: 'Copia el inicio, el fin y todos los hitos del 3.º trimestre a esta evaluación Ordinaria/Final.',
+    linkOrdinariaConfirm:
+      'Se copiarán el inicio, el fin y todos los hitos del 3.º trimestre a la Ordinaria/Final, sobrescribiendo los actuales. ¿Continuar?',
+    syncOff: 'Sincronizar con 3.º',
+    syncOn: 'Sincronizado (desactivar)',
+    syncTitle:
+      'Mantiene iguales el 3.º trimestre y la Ordinaria/Final. Mientras esté activo, editar uno actualiza el otro.',
+    syncBadge: 'Sincronizado',
+    syncDirection:
+      'El 3.º trimestre y la Ordinaria/Final tienen datos distintos. ¿Qué debe prevalecer?\n\nAceptar = el 3.º trimestre sobrescribe la Ordinaria/Final.\nCancelar = la Ordinaria/Final sobrescribe el 3.º trimestre.',
   },
   guided: {
     pending: 'Pendiente de introducir ({n})',
@@ -164,6 +179,7 @@ export const es = {
     reclamacionAuto: 'Se calcula automáticamente: 3 días hábiles desde el día siguiente a la visibilidad de notas. Puedes ajustarlo.',
     items: {
       pruebaEvaluacionTeorica: 'Prueba de evaluación teórica',
+      semanaRevisionCalificaciones: 'Semana de revisión de calificaciones',
       sesionEvaluacion: 'Sesión de evaluación',
       itacaNotasInicio: 'Inicio de introducción de notas en ITACA',
       itacaNotasFinDocentes: 'Fin de introducción de notas por docentes',
@@ -201,9 +217,12 @@ export const es = {
     needDatesCompact: 'Indica inicio y fin de curso para ver el calendario compacto.',
     legendLective: 'Lectivo',
     legendVacaciones: 'Vacaciones',
-    legendFestivo: 'Festivo',
-    legendEvent: 'Evento / hito',
+    legendFestivo: 'Festivo autonómico o local',
+    legendEvent: 'Evento / hito (institucional, guiado, festivo recuperado…)',
     legendTermStart: 'Inicio de trimestre',
+    legendRecovered: 'Festivo recuperado (lectivo)',
+    legendNonLective: 'No lectivo (fin de semana o fuera de curso)',
+    legendLectiveNote: 'Los días dentro del periodo de curso sin ninguna marca son lectivos.',
   },
   published: {
     title: 'Calendarios publicados',

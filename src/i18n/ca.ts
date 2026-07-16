@@ -156,6 +156,21 @@ export const ca: Dict = {
     week: 'setmana',
     weekEarlier: 'Avançar l’inici una setmana',
     weekLater: 'Endarrerir l’inici una setmana',
+    moveMilestonesConfirm:
+      'Acceptar = moure també tots els fites del trimestre la mateixa setmana.\nCancel·lar = moure només l’inici del trimestre.',
+    milestoneCollision:
+      'Avís: després de moure’ls, aquests fites caurien en dia no lectiu:\n{list}\n\nContinuar igualment?',
+    linkOrdinaria: 'Igualar dates al 3r trimestre',
+    linkOrdinariaTitle: 'Copia l’inici, el fi i tots els fites del 3r trimestre a aquesta avaluació Ordinària/Final.',
+    linkOrdinariaConfirm:
+      'Es copiaran l’inici, el fi i tots els fites del 3r trimestre a l’Ordinària/Final, sobreescrivint els actuals. Continuar?',
+    syncOff: 'Sincronitzar amb 3r',
+    syncOn: 'Sincronitzat (desactivar)',
+    syncTitle:
+      'Manté iguals el 3r trimestre i l’Ordinària/Final. Mentre estiga actiu, editar-ne un actualitza l’altre.',
+    syncBadge: 'Sincronitzat',
+    syncDirection:
+      'El 3r trimestre i l’Ordinària/Final tenen dades distintes. Què ha de prevaldre?\n\nAcceptar = el 3r trimestre sobreescriu l’Ordinària/Final.\nCancel·lar = l’Ordinària/Final sobreescriu el 3r trimestre.',
   },
   guided: {
     pending: 'Pendent d’introduir ({n})',
@@ -165,6 +180,7 @@ export const ca: Dict = {
     reclamacionAuto: 'Es calcula automàticament: 3 dies hàbils des de l’endemà de la visibilitat de notes. Pots ajustar-ho.',
     items: {
       pruebaEvaluacionTeorica: 'Prova d’avaluació teòrica',
+      semanaRevisionCalificaciones: 'Setmana de revisió de qualificacions',
       sesionEvaluacion: 'Sessió d’avaluació',
       itacaNotasInicio: 'Inici d’introducció de notes a ITACA',
       itacaNotasFinDocentes: 'Fi d’introducció de notes pel professorat',
@@ -202,9 +218,12 @@ export const ca: Dict = {
     needDatesCompact: 'Indica l’inici i el fi de curs per a veure el calendari compacte.',
     legendLective: 'Lectiu',
     legendVacaciones: 'Vacances',
-    legendFestivo: 'Festiu',
-    legendEvent: 'Esdeveniment / fita',
+    legendFestivo: 'Festiu autonòmic o local',
+    legendEvent: 'Esdeveniment / fita (institucional, guiat, festiu recuperat…)',
     legendTermStart: 'Inici de trimestre',
+    legendRecovered: 'Festiu recuperat (lectiu)',
+    legendNonLective: 'No lectiu (cap de setmana o fora de curs)',
+    legendLectiveNote: 'Els dies dins del període de curs sense cap marca són lectius.',
   },
   published: {
     title: 'Calendaris publicats',

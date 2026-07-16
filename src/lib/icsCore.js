@@ -29,6 +29,7 @@ function icsDate(iso) {
 // Etiquetas por defecto (castellano). La app puede pasar `labels` traducidas.
 const GUIDED_LABELS = {
   pruebaEvaluacionTeorica: 'Prueba de evaluación teórica',
+  semanaRevisionCalificaciones: 'Semana de revisión de calificaciones',
   sesionEvaluacion: 'Sesión de evaluación',
   itacaNotasInicio: 'Inicio de notas en ITACA',
   itacaNotasFinDocentes: 'Fin de introducción de notas por docentes',

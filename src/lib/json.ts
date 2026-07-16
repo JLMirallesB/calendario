@@ -51,6 +51,7 @@ function emptyRangeGuided(): GuidedValue {
 export function emptyGuided(): GuidedFields {
   return {
     pruebaEvaluacionTeorica: emptyGuidedValue(),
+    semanaRevisionCalificaciones: emptyRangeGuided(),
     sesionEvaluacion: emptyGuidedValue(),
     itacaNotasInicio: emptyGuidedValue(),
     itacaNotasFinDocentes: emptyGuidedValue(),
@@ -164,6 +165,8 @@ function coerceGuided(v: unknown): GuidedFields {
   return {
     ...base,
     pruebaEvaluacionTeorica: coerceGuidedValue(o.pruebaEvaluacionTeorica),
+    // Ausente → se mantiene en modo rango (es una semana).
+    semanaRevisionCalificaciones: coerceGuidedValue(o.semanaRevisionCalificaciones ?? { range: { start: null, end: null } }),
     sesionEvaluacion: coerceGuidedValue(o.sesionEvaluacion),
     itacaNotasInicio: coerceGuidedValue(o.itacaNotasInicio),
     // Migración: el antiguo `itacaNotasUltimaModif` pasa a «fin de introducción por docentes».
@@ -194,6 +197,7 @@ function coerceTerm(v: unknown): Term {
     endDate: asISOorNull(o.endDate),
     guidedEnabled: asBool(o.guidedEnabled),
     guided: coerceGuided(o.guided),
+    ...(asBool(o.linkedToTercer) ? { linkedToTercer: true } : {}),
   }
 }
 

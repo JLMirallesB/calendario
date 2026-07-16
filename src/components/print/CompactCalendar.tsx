@@ -159,13 +159,18 @@ function MiniMonth({
                 const hasFest = occ.some((o) => o.kind === 'festivoAutonomico' || o.kind === 'festivoLocal')
                 const hasVac = occ.some((o) => o.kind === 'vacaciones')
                 const lective = isLectiveDay(cal, iso)
+                const hasRecovered = occ.some((o) => o.kind === 'festivoALectivo')
                 const hasOther = occ.some(
-                  (o) => !['vacaciones', 'festivoAutonomico', 'festivoLocal'].includes(o.kind),
+                  (o) => !['vacaciones', 'festivoAutonomico', 'festivoLocal', 'festivoALectivo'].includes(o.kind),
                 )
-                let cls = 'nonlective'
-                if (hasFest) cls = 'fest'
+                // Prioridad: un día lectivo (incluye un festivo recuperado) NO se marca como
+                // vacaciones/festivo. Los lectivos no llevan color; los no lectivos sueltos, atenuados.
+                let cls = ''
+                if (lective) cls = ''
+                else if (hasFest) cls = 'fest'
                 else if (hasVac) cls = 'vac'
-                else if (lective) cls = 'lective'
+                else cls = 'nonlective'
+                if (hasRecovered) cls += ' recovered' // festivo recuperado como lectivo
                 const termName = termStarts.get(iso)
                 if (termName) cls += ' term-start'
                 if (interactive) cls += ' clickable'
@@ -196,25 +201,31 @@ function MiniMonth({
 
 function Legend({ t }: { t: TFunc }) {
   return (
-    <div className="tag-legend" style={{ marginTop: 16 }}>
-      <span className="swatch">
-        <span className="box" style={{ background: 'color-mix(in srgb, var(--lective) 40%, transparent)' }} />{' '}
-        {t('print.legendLective')}
-      </span>
-      <span className="swatch">
-        <span className="box" style={{ background: 'color-mix(in srgb, var(--vacaciones) 45%, transparent)' }} />{' '}
-        {t('print.legendVacaciones')}
-      </span>
-      <span className="swatch">
-        <span className="box" style={{ background: 'color-mix(in srgb, var(--festivo) 40%, transparent)' }} />{' '}
-        {t('print.legendFestivo')}
-      </span>
-      <span className="swatch">
-        <span className="box" style={{ background: 'var(--accent)', borderRadius: '50%' }} /> {t('print.legendEvent')}
-      </span>
-      <span className="swatch">
-        <span className="box term-start-swatch" /> {t('print.legendTermStart')}
-      </span>
-    </div>
+    <>
+      <div className="tag-legend" style={{ marginTop: 16 }}>
+        <span className="swatch">
+          <span className="box" style={{ background: 'color-mix(in srgb, var(--vacaciones) 45%, transparent)' }} />{' '}
+          {t('print.legendVacaciones')}
+        </span>
+        <span className="swatch">
+          <span className="box" style={{ background: 'color-mix(in srgb, var(--festivo) 40%, transparent)' }} />{' '}
+          {t('print.legendFestivo')}
+        </span>
+        <span className="swatch">
+          <span className="box term-start-swatch" /> {t('print.legendTermStart')}
+        </span>
+        <span className="swatch">
+          <span className="box recovered-swatch" /> {t('print.legendRecovered')}
+        </span>
+        <span className="swatch">
+          <span className="box" style={{ background: 'var(--accent)', borderRadius: '50%' }} /> {t('print.legendEvent')}
+        </span>
+        <span className="swatch">
+          <span className="box" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }} />{' '}
+          {t('print.legendNonLective')}
+        </span>
+      </div>
+      <p className="inline-note" style={{ marginTop: 8 }}>{t('print.legendLectiveNote')}</p>
+    </>
   )
 }

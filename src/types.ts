@@ -44,6 +44,8 @@ export interface GuidedValue {
 /** Hitos administrativos del modo guiado, comunes a los trimestres. */
 export interface GuidedFields {
   pruebaEvaluacionTeorica: GuidedValue
+  /** Semana de revisión de calificaciones (por defecto en modo rango). */
+  semanaRevisionCalificaciones: GuidedValue
   sesionEvaluacion: GuidedValue
   itacaNotasInicio: GuidedValue
   /** Fecha fin de introducción de notas por docentes. */
@@ -71,6 +73,11 @@ export interface Term {
   endDate: ISODate | null
   guidedEnabled: boolean
   guided: GuidedFields
+  /**
+   * Solo en la evaluación Ordinaria/Final: si es true, sus fechas e hitos se mantienen
+   * sincronizados con el 3.º trimestre (editar uno actualiza el otro).
+   */
+  linkedToTercer?: boolean
 }
 
 /** Categoría de un evento; determina cómo afecta (o no) al cómputo lectivo. */

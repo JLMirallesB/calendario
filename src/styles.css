@@ -153,6 +153,30 @@ h4 {
   margin-bottom: 0;
 }
 
+/* Bloques de trimestre: separación visual clara y colapsables. */
+.term-block {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  padding: 12px 14px;
+  margin-bottom: 16px;
+}
+.term-block:last-child {
+  margin-bottom: 0;
+}
+.term-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.term-block-header .section-toggle strong {
+  font-size: 15px;
+}
+.term-block-body {
+  margin-top: 12px;
+}
+
 /* ---------- Header ---------- */
 
 .site-header {
